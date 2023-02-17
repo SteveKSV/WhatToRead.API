@@ -9,6 +9,6 @@ namespace WhatToRead.API.Core.Models
 {
     public class Publisher : BaseEntity
     {
-        public string Publisher_Name { get;}
+        public string Publisher_Name { get; set; }
     }
 }
