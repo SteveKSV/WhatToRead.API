@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33205.214
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatToRead.API", "WhatToRead.API\WhatToRead.API.csproj", "{DE2D1B62-9C27-4790-AF8F-69834A2FD380}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatToRead.API.AdoNet.DB", "WhatToRead.API.AdoNet.DB\WhatToRead.API.AdoNet.DB.csproj", "{62A0814F-0138-4EC1-9E73-992B452DCBF8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DE2D1B62-9C27-4790-AF8F-69834A2FD380}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE2D1B62-9C27-4790-AF8F-69834A2FD380}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE2D1B62-9C27-4790-AF8F-69834A2FD380}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE2D1B62-9C27-4790-AF8F-69834A2FD380}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62A0814F-0138-4EC1-9E73-992B452DCBF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62A0814F-0138-4EC1-9E73-992B452DCBF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62A0814F-0138-4EC1-9E73-992B452DCBF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62A0814F-0138-4EC1-9E73-992B452DCBF8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {55BAFAE6-D5F4-4684-8803-D0D04C96B429}
+	EndGlobalSection
+EndGlobal
