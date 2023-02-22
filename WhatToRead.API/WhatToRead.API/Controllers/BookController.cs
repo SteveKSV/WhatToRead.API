@@ -22,7 +22,7 @@ namespace WhatToRead.API.Controllers
             _logger = logger;
         }
 
-        // GET: api/author
+        // GET: api/book
         [HttpGet]
         public async Task<ActionResult> GetAllAsync()
         {
@@ -40,7 +40,7 @@ namespace WhatToRead.API.Controllers
             }
         }
 
-        // GET: api/author/Id
+        // GET: api/book/Id
         [HttpGet("{id}")]
         public async Task<ActionResult> GetById(int id)
         {
@@ -67,7 +67,37 @@ namespace WhatToRead.API.Controllers
             }
         }
 
-        // POST: api/author
+        //GET: api/book/id
+        [Route("GetBookByAuthorId/{id}")]
+        [HttpGet]
+
+
+        public async Task<ActionResult> GetBookByAuthorId(int id)
+        {
+            try
+            {
+                var result = await _unitOfWork.Books.GetBookByAuthorId(id);
+                _unitOfWork.Commit();
+                if (result == null)
+                {
+                    _logger.LogInformation($"Книга із Author_Id: {id}, не була знайдена у базі даних");
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogInformation($"Отримали книгу з бази даних!");
+                    return Ok(result);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Транзакція сфейлилась! Щось пішло не так у методі GetBookByAuthorId() - {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "вот так вот!");
+            }
+        }
+
+        // POST: api/book
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] Book entity)
         {
@@ -94,7 +124,7 @@ namespace WhatToRead.API.Controllers
             }
         }
 
-        //GET: api/author/Id
+        //GET: api/book/Id
         [HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
@@ -117,7 +147,7 @@ namespace WhatToRead.API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "вот так вот!");
             }
         }
-        //POST: api/author/id
+        //POST: api/book/id
         [HttpPut]
         public async Task<IActionResult> Update(int id, [FromBody] Book book)
         {
