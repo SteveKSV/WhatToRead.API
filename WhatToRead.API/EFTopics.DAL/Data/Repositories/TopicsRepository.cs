@@ -13,9 +13,15 @@ namespace EFTopics.DAL.Data.Repositories
     {
         public TopicsRepository(TopicsContext topicsContext) : base(topicsContext) { }
 
-        public override Task<Topics> GetCompleteEntityAsync(int id)
+        public override async Task UpdateAsync(int id, Topics entity)
         {
-            throw new NotImplementedException();
+            if (entity == null)
+            {
+                throw new ArgumentNullException($"{nameof(Topics)} entity must not be null");
+            }
+            var topicsToUpdate = databaseContext.Topics.Find(id);
+            topicsToUpdate.Name = entity.Name;
+            await Task.Run(()=> table.Update(topicsToUpdate));
         }
     }
 }

@@ -5,15 +5,13 @@ namespace TeamworkSystem.DataAccessLayer.Interfaces.Repositories
 {
     public interface IRepository<TEntity> where TEntity : class
     {
-        Task<IEnumerable<TEntity>> GetAsync();
+        Task<IEnumerable<TEntity>> GetAllTopicsAsync();
 
-        Task<TEntity> GetByIdAsync(int id);
-
-        Task<TEntity> GetCompleteEntityAsync(int id);
+        Task<TEntity> GetTopicByIdAsync(int id);
 
         Task InsertAsync(TEntity entity);
 
-        Task UpdateAsync(TEntity entity);
+        Task UpdateAsync(int id, TEntity entity);
 
         Task DeleteAsync(int id);
     }
