@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EFTopics.DAL.Migrations
 {
-    [DbContext(typeof(TopicsContext))]
+    [DbContext(typeof(ApplicationContext))]
     [Migration("20230223083541_01")]
     partial class _01
     {

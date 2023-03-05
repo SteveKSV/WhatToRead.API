@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TeamworkSystem.DataAccessLayer.Exceptions
+namespace EFTopics.DAL.Exceptions
 {
     public class EntityNotFoundException : Exception
     {

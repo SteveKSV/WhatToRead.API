@@ -8,8 +8,12 @@ using System.Threading.Tasks;
 
 namespace EFTopics.DAL.Data.Repositories
 {
-    public class TopicsRepository : GenericRepository<Topic>, ITopicsRepository
+    public class PostRepository : GenericRepository<Post>, IPostRepository
     {
-        public TopicsRepository(ApplicationContext _dbcontext) : base(_dbcontext) { }
+        public PostRepository(ApplicationContext _dbcontext) : base(_dbcontext)
+        {
+        }
+
+       
     }
 }

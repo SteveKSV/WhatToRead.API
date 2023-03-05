@@ -1,12 +1,12 @@
 ﻿using System.Threading.Tasks;
 using EFTopics.DAL.Interfaces.Repositories;
-using TeamworkSystem.DataAccessLayer.Interfaces.Repositories;
 
-namespace TeamworkSystem.DataAccessLayer.Interfaces
+namespace EFTopics.DAL.Interfaces
 {
     public interface IUnitOfWork
     {
         ITopicsRepository TopicsRepository { get; }
+        IPostRepository PostRepository { get; }
         Task SaveChangesAsync();
     }
 }

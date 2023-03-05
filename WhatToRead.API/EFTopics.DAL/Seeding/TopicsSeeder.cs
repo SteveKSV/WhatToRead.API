@@ -9,17 +9,17 @@ using System.Threading.Tasks;
 
 namespace EFTopics.DAL.Seeding
 {
-    public class TopicsSeeder : ISeeder<Topics>
+    public class TopicsSeeder : ISeeder<Topic>
     {
-        private static readonly List<Topics> topics = new()
+        private static readonly List<Topic> topics = new()
         {
-            new Topics
+            new Topic
             {
-                Id = 1,
+                TopicId = 1,
                 Name = "Books"
             }
         };
 
-        public void Seed(EntityTypeBuilder<Topics> builder) => builder.HasData(topics);
+        public void Seed(EntityTypeBuilder<Topic> builder) => builder.HasData(topics);
     }
 }

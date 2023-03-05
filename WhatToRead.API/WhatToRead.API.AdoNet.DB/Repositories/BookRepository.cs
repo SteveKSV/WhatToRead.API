@@ -13,9 +13,16 @@ using WhatToRead.Core.Models;
 
 namespace WhatToRead.Infrastructure.Repositories
 {
-    public class BookRepository : GenericRepository<Book>,IBookRepository
+    public class BookRepository : GenericRepository<Book>, IBookRepository
     {
         public BookRepository(SqlConnection sqlConnection, IDbTransaction dbtransaction) : base(sqlConnection, dbtransaction, "[CatalogSchema].Book") { }
+
+        public async Task<IEnumerable<BooksWithPublisher>> GetAllBooksWithPublisherName()
+        {
+            var result = await _sqlConnection.QueryAsync<BooksWithPublisher>("GetAllBookWithPublisher", commandType: CommandType.StoredProcedure, transaction: _dbTransaction);
+
+            return result;
+        }
 
         public async Task<IEnumerable<BookByAuthor>> GetBookByAuthorId(int id)
         {
@@ -28,5 +35,30 @@ namespace WhatToRead.Infrastructure.Repositories
 
             return result;
         }
+
+        public async Task<IEnumerable<Book>> GetBooksByDateUp(DateTime date)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@date", date);
+            var result = await _sqlConnection.QueryAsync<Book>("GetBookByDateUp", parameters, commandType: CommandType.StoredProcedure, transaction: _dbTransaction);
+
+            if (result == null)
+                throw new KeyNotFoundException($"Publisher with id [{date}] could not be found.");
+
+            return result;
+        }
+
+        public async Task<IEnumerable<BookByPublisher>> GetBookByPublisherId(int id)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@id", id);
+            var result = await _sqlConnection.QueryAsync<BookByPublisher>("GetBookByPublisher", parameters, commandType: CommandType.StoredProcedure, transaction: _dbTransaction);
+
+            if (result == null)
+                throw new KeyNotFoundException($"Publisher with id [{id}] could not be found.");
+
+            return result;
+        }
+
     }
 }

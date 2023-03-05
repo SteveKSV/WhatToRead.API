@@ -1,21 +1,22 @@
-﻿using EFTopics.DAL.Entities;
-using Microsoft.AspNetCore.Mvc;
-using EFTopics.DAL.Interfaces;
-using AutoMapper;
+﻿using AutoMapper;
 using EFTopics.DAL.Data;
 using EFTopics.DAL.Dtos;
+using EFTopics.DAL.Entities;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using EFTopics.DAL.Interfaces;
 
 namespace WhatToRead.API.EF.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TopicController : ControllerBase
+    public class PostController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<TopicController> _logger;
+        private readonly ILogger<PostController> _logger;
         private readonly IMapper _mapper;
         private readonly ApplicationContext _dbContext;
-        public TopicController(IUnitOfWork unitOfWork, ILogger<TopicController> logger, IMapper mapper, ApplicationContext context)
+        public PostController(IUnitOfWork unitOfWork, ILogger<PostController> logger, IMapper mapper, ApplicationContext context)
         {
 
             _unitOfWork = unitOfWork;
@@ -25,38 +26,38 @@ namespace WhatToRead.API.EF.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<Topic>))]
-        public IActionResult GetAllTopics()
+        [ProducesResponseType(200, Type = typeof(IEnumerable<Post>))]
+        public IActionResult GetAllPosts()
         {
             try
             {
-                var results = _mapper.Map<List<TopicDto>>(_unitOfWork.TopicsRepository.GetAllEntities());
+                var results = _mapper.Map<List<PostDto>>(_unitOfWork.PostRepository.GetAllEntities());
 
                 _logger.LogInformation($"Отримали всі дані з бази даних!");
                 return Ok(results);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Транзакція сфейлилась! Щось пішло не так у методі GetAllTopics() - {ex.Message}");
+                _logger.LogError($"Транзакція сфейлилась! Щось пішло не так у методі GetAllPosts() - {ex.Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, "вот так вот!");
             }
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(200, Type = typeof(Topic))]
+        [ProducesResponseType(200, Type = typeof(Post))]
         [ProducesResponseType(400)]
-        public IActionResult GetTopicById(int id)
+        public IActionResult GetPostById(int id)
         {
             try
             {
-                var result = _mapper.Map<TopicDto>(_unitOfWork.TopicsRepository.GetEntityById(id));
+                var result = _mapper.Map<PostDto>(_unitOfWork.PostRepository.GetEntityById(id));
 
                 _logger.LogInformation($"Отримали всі дані з бази даних!");
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Транзакція сфейлилась! Щось пішло не так у методі GetTopicById() - {ex.Message}");
+                _logger.LogError($"Транзакція сфейлилась! Щось пішло не так у методі GetPostById() - {ex.Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, "вот так вот!");
             }
         }
@@ -64,41 +65,41 @@ namespace WhatToRead.API.EF.Controllers
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public IActionResult Insert([FromBody] TopicDto topicCreate)
+        public IActionResult Insert([FromBody] PostDto postCreate)
         {
             try
             {
-                if (topicCreate == null)
+                if (postCreate == null)
                 {
                     _logger.LogInformation($"Ми отримали пустий json зі сторони клієнта");
-                    return BadRequest("Обєкт Topic null");
+                    return BadRequest("Обєкт post null");
                 }
 
-                var topic = _unitOfWork.TopicsRepository.GetAllEntities()
-                    .Where(p => p.Name.Trim().ToUpper() == topicCreate.Name.Trim().ToUpper());
+                var post = _unitOfWork.PostRepository.GetAllEntities()
+                    .Where(p=>p.Title.Trim().ToUpper() == postCreate.Title.Trim().ToUpper());
 
-                if (topic == null)
+                if (post == null)
                 {
-                    ModelState.AddModelError("", "Topic вже існує");
+                    ModelState.AddModelError("", "Post вже існує");
                     return StatusCode(422, ModelState);
                 }
 
                 if (!ModelState.IsValid)
                 {
                     _logger.LogInformation($"Ми отримали некоректний json зі сторони клієнта");
-                    return BadRequest("Обєкт Topic є некоректним");
+                    return BadRequest("Обєкт post є некоректним");
                 }
 
-                var topicMap = _mapper.Map<Topic>(topicCreate);
+                var postMap = _mapper.Map<Post>(postCreate);
 
-                if (!_unitOfWork.TopicsRepository.CreateEntity(topicMap))
+                if (!_unitOfWork.PostRepository.CreateEntity(postMap))
                 {
                     ModelState.AddModelError("", "Щось пішло не так під час зберігання!");
                     return StatusCode(500, ModelState);
                 }
 
 
-                return Ok("Успішно доданий новий Topic!");
+                return Ok("Успішно доданий новий post!");
             }
 
             catch (Exception ex)
@@ -112,32 +113,32 @@ namespace WhatToRead.API.EF.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public IActionResult Delete(int topicId)
+        public IActionResult Delete(int postId)
         {
             try
             {
-                if (!_dbContext.Topics.Any(c => c.TopicId == topicId))
+                if (!_dbContext.Posts.Any(c => c.PostId == postId))
                 {
                     return NotFound();
                 }
 
-                var topicToDelete = _unitOfWork.TopicsRepository.GetEntityById(topicId);
+                var postToDelete = _unitOfWork.PostRepository.GetEntityById(postId);
 
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
                 }
 
-                if (!_unitOfWork.TopicsRepository.DeleteEntity(topicToDelete))
+                if(!_unitOfWork.PostRepository.DeleteEntity(postToDelete))
                 {
-                    ModelState.AddModelError("", "Щось пішло не так під час видалення Topic!");
+                    ModelState.AddModelError("", "Щось пішло не так під час видалення post!");
                 }
-
+                
                 return NoContent();
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Транзакція сфейлилась! Щось пішло не так у методі Delete() - {ex.Message}");
+                _logger.LogError($"Транзакція сфейлилась! Щось пішло не так у методі DeleteAsync() - {ex.Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, "вот так вот!");
             }
         }
@@ -146,22 +147,22 @@ namespace WhatToRead.API.EF.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public IActionResult Update(int topicId, [FromBody] TopicDto updatedTopic)
+        public IActionResult Update(int postId, [FromBody] PostDto updatedPost)
         {
             try
             {
-                if (updatedTopic == null)
+                if (updatedPost == null)
                 {
                     _logger.LogInformation($"Ми отримали пустий json зі сторони клієнта");
-                    return BadRequest("Обєкт Topic є null");
+                    return BadRequest("Обєкт topic є null");
                 }
 
-                if (topicId != updatedTopic.TopicId)
+                if(postId != updatedPost.PostId)
                 {
                     return BadRequest(ModelState);
                 }
 
-                if (!_dbContext.Topics.Any(c => c.TopicId == topicId))
+                if(!_dbContext.Posts.Any(c => c.PostId == postId))
                     return NotFound();
 
 
@@ -171,18 +172,18 @@ namespace WhatToRead.API.EF.Controllers
                     return BadRequest("Об'єкт topic є некоректним");
                 }
 
-                var topicMap = _mapper.Map<Topic>(updatedTopic);
+                var postMap = _mapper.Map<Post>(updatedPost);
 
-                if (!_unitOfWork.TopicsRepository.UpdateEntity(topicMap))
+                if (!_unitOfWork.PostRepository.UpdateEntity(postMap))
                 {
-                    ModelState.AddModelError("", "Щось пішло не так під час оновлення Topic!");
+                    ModelState.AddModelError("", "Щось пішло не так під час оновлення post!");
                     return StatusCode(500, ModelState);
                 }
                 return NoContent();
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Транзакція сфейлилась! Щось пішло не так у методі Update - {ex.Message}");
+                _logger.LogError($"Транзакція сфейлилась! Щось пішло не так у методі UpdateAsync - {ex.Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, "вот так вот!");
             }
         }

@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace EFTopics.DAL.Interfaces.Repositories
 {
-    public interface ITopicsRepository : IRepository<Topic>
+    public interface IPostRepository : IRepository<Post>
     {
+
     }
 }

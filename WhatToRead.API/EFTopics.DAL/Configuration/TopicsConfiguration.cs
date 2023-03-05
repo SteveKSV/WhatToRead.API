@@ -10,11 +10,17 @@ using EFTopics.DAL.Seeding;
 
 namespace EFTopics.DAL.Configuration
 {
-    public class TopicsConfiguration : IEntityTypeConfiguration<Topics>
+    public class TopicsConfiguration : IEntityTypeConfiguration<Topic>
     {
-        public void Configure(EntityTypeBuilder<Topics> builder)
+        public void Configure(EntityTypeBuilder<Topic> builder)
         {
-            builder.Property(project => project.Id)
+            builder
+                .HasMany(t => t.PostBlogs)
+                .WithOne(t => t.Topic)
+                .HasForeignKey(t => t.TopicId)
+                .HasPrincipalKey(t => t.TopicId);
+
+            builder.Property(project => project.TopicId)
                    .UseIdentityColumn()
                    .IsRequired();
 

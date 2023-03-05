@@ -1,27 +1,33 @@
 using EFTopics.DAL.Data;
 using EFTopics.DAL.Data.Repositories;
 using EFTopics.DAL.Interfaces.Repositories;
-using TeamworkSystem.DataAccessLayer.Interfaces;
+using EFTopics.DAL.Interfaces;
+using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 //Connection for EF database + DbContext
-builder.Services.AddDbContext<TopicsContext>(options =>
+builder.Services.AddDbContext<ApplicationContext>(options =>
 {
-    string connectionString = builder.Configuration.GetConnectionString("DapperConnection");
-    //options.UseSqlServer(connectionString);
+    options.UseSqlServer(builder.Configuration.GetConnectionString("sqlConnection"));
 });
 
 
 
 builder.Services.AddScoped<ITopicsRepository, TopicsRepository>();
+builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();

@@ -1,18 +1,16 @@
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Threading.Tasks;
 
-namespace TeamworkSystem.DataAccessLayer.Interfaces.Repositories
+namespace EFTopics.DAL.Interfaces.Repositories
 {
     public interface IRepository<TEntity> where TEntity : class
     {
-        Task<IEnumerable<TEntity>> GetAllTopicsAsync();
-
-        Task<TEntity> GetTopicByIdAsync(int id);
-
-        Task InsertAsync(TEntity entity);
-
-        Task UpdateAsync(int id, TEntity entity);
-
-        Task DeleteAsync(int id);
+        ICollection<TEntity> GetAllEntities();
+        TEntity GetEntityById(int id);
+        bool CreateEntity(TEntity entity);
+        bool UpdateEntity(TEntity entity);
+        bool DeleteEntity(TEntity entity);
+        bool Save();
     }
 }

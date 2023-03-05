@@ -97,6 +97,75 @@ namespace WhatToRead.API.Controllers
             }
         }
 
+        [Route("GetAllBooksWithPublisher")]
+        [HttpGet]
+        public async Task<ActionResult> GetAllBooksWithPublisher()
+        {
+            try
+            {
+                var result = await _unitOfWork.Books.GetAllBooksWithPublisherName();
+                _unitOfWork.Commit();
+                _logger.LogInformation($"Отримали книгу з publisher з бази даних!");
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Транзакція сфейлилась! Щось пішло не так у методі GetAllBooksWithPublisherName() - {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "вот так вот!");
+            }
+        }
+
+        [Route("GetAllBooksWithPublisher/{id}")]
+        [HttpGet]
+        public async Task<ActionResult> GetBookByPublisher(int id)
+        {
+            try
+            {
+                var result = await _unitOfWork.Books.GetBookByPublisherId(id);
+                _unitOfWork.Commit();
+                if (result == null)
+                {
+                    _logger.LogInformation($"Книга із Publisher_Id: {id}, не була знайдена у базі даних");
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogInformation($"Отримали книгу з бази даних!");
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Транзакція сфейлилась! Щось пішло не так у методі GetBookByPublisherId() - {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "вот так вот!");
+            }
+        }
+
+        [Route("GetBooksByDateUp/{date}")]
+        [HttpGet]
+        public async Task<ActionResult> GetBookByPublisher(DateTime date)
+        {
+            try
+            {
+                var result = await _unitOfWork.Books.GetBooksByDateUp(date);
+                _unitOfWork.Commit();
+                if (result == null)
+                {
+                    _logger.LogInformation($"Книги з датою вище: {date}, не були знайдені у базі даних");
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogInformation($"Отримали книги з бази даних!");
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Транзакція сфейлилась! Щось пішло не так у методі GetBookByDateUp() - {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "вот так вот!");
+            }
+        }
         // POST: api/book
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] Book entity)

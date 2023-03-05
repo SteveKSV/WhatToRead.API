@@ -5,27 +5,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TeamworkSystem.DataAccessLayer.Interfaces;
+using EFTopics.DAL.Interfaces;
 
 namespace EFTopics.DAL.Data.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {
-        protected readonly TopicsContext databaseContext;
+        protected readonly ApplicationContext databaseContext;
 
         public ITopicsRepository TopicsRepository { get; }
+        public IPostRepository PostRepository { get; }
         public async Task SaveChangesAsync()
         {
             await databaseContext.SaveChangesAsync();
         }
 
         public UnitOfWork(
-            TopicsContext databaseContext,
-            ITopicsRepository topicsRepository)
+            ApplicationContext databaseContext,
+            ITopicsRepository topicsRepository,
+            IPostRepository postRepository)
         {
             this.databaseContext = databaseContext;
 
             TopicsRepository = topicsRepository;
+            PostRepository = postRepository;
         }
     }
 }
