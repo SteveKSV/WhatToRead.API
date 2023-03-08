@@ -26,11 +26,11 @@ namespace WhatToRead.API.EF.Controllers
 
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Topic>))]
-        public IActionResult GetAllTopics()
+        public async Task<IActionResult> GetAllTopics()
         {
             try
             {
-                var results = _mapper.Map<List<TopicDto>>(_unitOfWork.TopicsRepository.GetAllEntities());
+                var results = _mapper.Map<List<TopicDto>>(await _unitOfWork.TopicsRepository.GetAllEntitiesAsync());
 
                 _logger.LogInformation($"Отримали всі дані з бази даних!");
                 return Ok(results);
@@ -45,11 +45,11 @@ namespace WhatToRead.API.EF.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(200, Type = typeof(Topic))]
         [ProducesResponseType(400)]
-        public IActionResult GetTopicById(int id)
+        public async Task<IActionResult> GetTopicById(int id)
         {
             try
             {
-                var result = _mapper.Map<TopicDto>(_unitOfWork.TopicsRepository.GetEntityById(id));
+                var result = _mapper.Map<TopicDto>(await _unitOfWork.TopicsRepository.GetEntityByIdAsync(id));
 
                 _logger.LogInformation($"Отримали всі дані з бази даних!");
                 return Ok(result);
@@ -64,7 +64,7 @@ namespace WhatToRead.API.EF.Controllers
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public IActionResult Insert([FromBody] TopicDto topicCreate)
+        public async Task<IActionResult> Insert([FromBody] TopicDto topicCreate)
         {
             try
             {
@@ -74,8 +74,8 @@ namespace WhatToRead.API.EF.Controllers
                     return BadRequest("Обєкт Topic null");
                 }
 
-                var topic = _unitOfWork.TopicsRepository.GetAllEntities()
-                    .Where(p => p.Name.Trim().ToUpper() == topicCreate.Name.Trim().ToUpper());
+                var topic = await _unitOfWork.TopicsRepository.GetAllEntitiesAsync();
+                topic = topic.Where(p => p.Name.Trim().ToUpper() == topicCreate.Name.Trim().ToUpper());
 
                 if (topic == null)
                 {
@@ -91,7 +91,7 @@ namespace WhatToRead.API.EF.Controllers
 
                 var topicMap = _mapper.Map<Topic>(topicCreate);
 
-                if (!_unitOfWork.TopicsRepository.CreateEntity(topicMap))
+                if (!await _unitOfWork.TopicsRepository.CreateEntityAsync(topicMap))
                 {
                     ModelState.AddModelError("", "Щось пішло не так під час зберігання!");
                     return StatusCode(500, ModelState);
@@ -112,7 +112,7 @@ namespace WhatToRead.API.EF.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public IActionResult Delete(int topicId)
+        public async Task<IActionResult> Delete(int topicId)
         {
             try
             {
@@ -121,14 +121,14 @@ namespace WhatToRead.API.EF.Controllers
                     return NotFound();
                 }
 
-                var topicToDelete = _unitOfWork.TopicsRepository.GetEntityById(topicId);
+                var topicToDelete = await _unitOfWork.TopicsRepository.GetEntityByIdAsync(topicId);
 
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
                 }
 
-                if (!_unitOfWork.TopicsRepository.DeleteEntity(topicToDelete))
+                if (!await _unitOfWork.TopicsRepository.DeleteEntityAsync(topicToDelete))
                 {
                     ModelState.AddModelError("", "Щось пішло не так під час видалення Topic!");
                 }
@@ -146,7 +146,7 @@ namespace WhatToRead.API.EF.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public IActionResult Update(int topicId, [FromBody] TopicDto updatedTopic)
+        public async Task<IActionResult> Update(int topicId, [FromBody] TopicDto updatedTopic)
         {
             try
             {
@@ -173,7 +173,7 @@ namespace WhatToRead.API.EF.Controllers
 
                 var topicMap = _mapper.Map<Topic>(updatedTopic);
 
-                if (!_unitOfWork.TopicsRepository.UpdateEntity(topicMap))
+                if (!await _unitOfWork.TopicsRepository.UpdateEntityAsync(topicMap))
                 {
                     ModelState.AddModelError("", "Щось пішло не так під час оновлення Topic!");
                     return StatusCode(500, ModelState);

@@ -18,26 +18,26 @@ namespace EFTopics.DAL.Data.Repositories
             table = _dbContext.Set<TEntity>();
         }
 
-        public bool CreateEntity(TEntity entity)
+        public async Task<bool> CreateEntityAsync(TEntity entity)
         {
-            _dbContext.Add(entity);
-            return Save();
+            await _dbContext.AddAsync(entity);
+            return await SaveAsync();
         }
 
-        public bool DeleteEntity(TEntity entity)
+        public async Task<bool> DeleteEntityAsync(TEntity entity)
         {
             _dbContext.Remove(entity);
-            return Save();
+            return await SaveAsync();
         }
 
-        public ICollection<TEntity> GetAllEntities()
+        public async Task<IEnumerable<TEntity>> GetAllEntitiesAsync()
         {
-            return table.ToList();
+            return await table.ToListAsync();
         }
 
-        public TEntity GetEntityById(int id)
+        public async Task<TEntity> GetEntityByIdAsync(int id)
         {
-            var entity = table.Find(id);
+            var entity = await table.FindAsync(id);
 
             if (entity == null)
             {
@@ -48,16 +48,16 @@ namespace EFTopics.DAL.Data.Repositories
             return entity;
         }
 
-        public bool Save()
+        public async Task<bool> SaveAsync()
         {
-            var saved = _dbContext.SaveChanges();
+            var saved = await _dbContext.SaveChangesAsync();
             return saved > 0 ? true : false;
         }
 
-        public bool UpdateEntity(TEntity entity)
+        public async Task<bool> UpdateEntityAsync(TEntity entity)
         {
             _dbContext.Update(entity);
-            return Save();
+            return await SaveAsync();
         }
 
         protected static string GetEntityNotFoundErrorMessage(int id) =>

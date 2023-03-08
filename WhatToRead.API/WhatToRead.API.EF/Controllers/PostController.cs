@@ -27,11 +27,11 @@ namespace WhatToRead.API.EF.Controllers
 
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Post>))]
-        public IActionResult GetAllPosts()
+        public async Task<IActionResult> GetAllPosts()
         {
             try
             {
-                var results = _mapper.Map<List<PostDto>>(_unitOfWork.PostRepository.GetAllEntities());
+                var results = _mapper.Map<List<PostDto>>(await _unitOfWork.PostRepository.GetAllEntitiesAsync());
 
                 _logger.LogInformation($"Отримали всі дані з бази даних!");
                 return Ok(results);
@@ -46,11 +46,11 @@ namespace WhatToRead.API.EF.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(200, Type = typeof(Post))]
         [ProducesResponseType(400)]
-        public IActionResult GetPostById(int id)
+        public async Task<IActionResult> GetPostById(int id)
         {
             try
             {
-                var result = _mapper.Map<PostDto>(_unitOfWork.PostRepository.GetEntityById(id));
+                var result = _mapper.Map<PostDto>(await _unitOfWork.PostRepository.GetEntityByIdAsync(id));
 
                 _logger.LogInformation($"Отримали всі дані з бази даних!");
                 return Ok(result);
@@ -65,7 +65,7 @@ namespace WhatToRead.API.EF.Controllers
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public IActionResult Insert([FromBody] PostDto postCreate)
+        public async Task<IActionResult> Insert([FromBody] PostDto postCreate)
         {
             try
             {
@@ -75,8 +75,8 @@ namespace WhatToRead.API.EF.Controllers
                     return BadRequest("Обєкт post null");
                 }
 
-                var post = _unitOfWork.PostRepository.GetAllEntities()
-                    .Where(p=>p.Title.Trim().ToUpper() == postCreate.Title.Trim().ToUpper());
+                var post = await _unitOfWork.PostRepository.GetAllEntitiesAsync();
+                post = post.Where(p=>p.Title.Trim().ToUpper() == postCreate.Title.Trim().ToUpper());
 
                 if (post == null)
                 {
@@ -92,7 +92,7 @@ namespace WhatToRead.API.EF.Controllers
 
                 var postMap = _mapper.Map<Post>(postCreate);
 
-                if (!_unitOfWork.PostRepository.CreateEntity(postMap))
+                if (!await _unitOfWork.PostRepository.CreateEntityAsync(postMap))
                 {
                     ModelState.AddModelError("", "Щось пішло не так під час зберігання!");
                     return StatusCode(500, ModelState);
@@ -113,7 +113,7 @@ namespace WhatToRead.API.EF.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public IActionResult Delete(int postId)
+        public async Task<IActionResult> Delete(int postId)
         {
             try
             {
@@ -122,14 +122,14 @@ namespace WhatToRead.API.EF.Controllers
                     return NotFound();
                 }
 
-                var postToDelete = _unitOfWork.PostRepository.GetEntityById(postId);
+                var postToDelete = await _unitOfWork.PostRepository.GetEntityByIdAsync(postId);
 
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
                 }
 
-                if(!_unitOfWork.PostRepository.DeleteEntity(postToDelete))
+                if(!await _unitOfWork.PostRepository.DeleteEntityAsync(postToDelete))
                 {
                     ModelState.AddModelError("", "Щось пішло не так під час видалення post!");
                 }
@@ -147,7 +147,7 @@ namespace WhatToRead.API.EF.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public IActionResult Update(int postId, [FromBody] PostDto updatedPost)
+        public async Task<IActionResult> Update(int postId, [FromBody] PostDto updatedPost)
         {
             try
             {
@@ -174,7 +174,7 @@ namespace WhatToRead.API.EF.Controllers
 
                 var postMap = _mapper.Map<Post>(updatedPost);
 
-                if (!_unitOfWork.PostRepository.UpdateEntity(postMap))
+                if (!await _unitOfWork.PostRepository.UpdateEntityAsync(postMap))
                 {
                     ModelState.AddModelError("", "Щось пішло не так під час оновлення post!");
                     return StatusCode(500, ModelState);

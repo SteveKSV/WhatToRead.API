@@ -6,11 +6,11 @@ namespace EFTopics.DAL.Interfaces.Repositories
 {
     public interface IRepository<TEntity> where TEntity : class
     {
-        ICollection<TEntity> GetAllEntities();
-        TEntity GetEntityById(int id);
-        bool CreateEntity(TEntity entity);
-        bool UpdateEntity(TEntity entity);
-        bool DeleteEntity(TEntity entity);
-        bool Save();
+        Task<IEnumerable<TEntity>> GetAllEntitiesAsync();
+        Task<TEntity> GetEntityByIdAsync(int id);
+        Task<bool> CreateEntityAsync(TEntity entity);
+        Task<bool> UpdateEntityAsync(TEntity entity);
+        Task<bool> DeleteEntityAsync(TEntity entity);
+        Task<bool> SaveAsync();
     }
 }
