@@ -4,6 +4,7 @@ using EFTopics.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFTopics.DAL.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationModelSnapshot : ModelSnapshot
+    [Migration("20230308133415_ChangingRelationship_2")]
+    partial class ChangingRelationship_2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,44 +64,6 @@ namespace EFTopics.DAL.Migrations
                     b.HasKey("PostId");
 
                     b.ToTable("Posts");
-
-                    b.HasData(
-                        new
-                        {
-                            PostId = 3,
-                            Body = "Content about how people are making rockets for science",
-                            Created_At = new DateTime(2022, 2, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Image = "rocketsBook.jpg",
-                            Published = false,
-                            Slug = "a-new-book-about-rockets",
-                            Title = "A new book about rockets",
-                            Updated_At = new DateTime(2022, 2, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Views = 5000
-                        },
-                        new
-                        {
-                            PostId = 4,
-                            Body = "Content about how people are making movies",
-                            Created_At = new DateTime(2018, 3, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Image = "moviesBook.jpg",
-                            Published = true,
-                            Slug = "a-new-book-about-movies",
-                            Title = "A new book about movies",
-                            Updated_At = new DateTime(2022, 3, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Views = 5000
-                        },
-                        new
-                        {
-                            PostId = 5,
-                            Body = "A new movie_content",
-                            Created_At = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Image = "movie.png",
-                            Published = false,
-                            Slug = "a-new-book-movie",
-                            Title = "A new movie",
-                            Updated_At = new DateTime(2023, 3, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Views = 5000
-                        });
                 });
 
             modelBuilder.Entity("EFTopics.DAL.Entities.PostBlog", b =>
@@ -114,23 +79,6 @@ namespace EFTopics.DAL.Migrations
                     b.HasIndex("TopicId");
 
                     b.ToTable("PostBlogs", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            PostId = 3,
-                            TopicId = 1
-                        },
-                        new
-                        {
-                            PostId = 4,
-                            TopicId = 1
-                        },
-                        new
-                        {
-                            PostId = 5,
-                            TopicId = 2
-                        });
                 });
 
             modelBuilder.Entity("EFTopics.DAL.Entities.Topic", b =>
@@ -155,11 +103,6 @@ namespace EFTopics.DAL.Migrations
                         {
                             TopicId = 1,
                             Name = "Books"
-                        },
-                        new
-                        {
-                            TopicId = 2,
-                            Name = "Movie"
                         });
                 });
 

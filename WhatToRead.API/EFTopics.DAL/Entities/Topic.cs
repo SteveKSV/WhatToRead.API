@@ -11,8 +11,8 @@ namespace EFTopics.DAL.Entities
     {
         public int TopicId { get; set; }
         public string Name { get; set; }
-        
 
+        public ICollection<Post> Posts { get; set; }
         public ICollection<PostBlog> PostBlogs { get; set; }
     }
 }

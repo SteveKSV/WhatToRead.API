@@ -15,14 +15,25 @@ namespace EFTopics.DAL.Configuration
         public void Configure(EntityTypeBuilder<Post> builder)
         {
             builder
-                .HasMany(p => p.PostBlogs)
-                .WithOne(p => p.Post)
-                .HasForeignKey(p => p.PostId)
-                .HasPrincipalKey(p => p.PostId);
-
-            builder.Property(p => p.PostId)
-                   .UseIdentityColumn()
-                   .IsRequired();
+                .HasMany(p => p.Topics)
+                .WithMany(p => p.Posts)
+                .UsingEntity<PostBlog>(
+                    j => j
+                        .HasOne(pt => pt.Topic)
+                        .WithMany(t => t.PostBlogs)
+                        .HasForeignKey(t => t.TopicId)
+                        .HasPrincipalKey(t=>t.TopicId),
+                    j => j
+                        .HasOne(pt => pt.Post)
+                        .WithMany(pt => pt.PostBlogs)
+                        .HasForeignKey(t => t.PostId)
+                        .HasPrincipalKey(t => t.PostId),
+                    j =>
+                    {
+                        j.HasKey(t=> new {t.PostId, t.TopicId});
+                        j.ToTable("PostBlogs");
+                    });
+            new PostSeeder().Seed(builder);
         }
     }
 }

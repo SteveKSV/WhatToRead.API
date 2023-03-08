@@ -11,13 +11,19 @@ namespace EFTopics.DAL.Seeding
 {
     public class TopicsSeeder : ISeeder<Topic>
     {
-        private static readonly List<Topic> topics = new()
+        private readonly List<Topic> topics = new()
         {
             new Topic
             {
                 TopicId = 1,
                 Name = "Books"
+            },
+            new Topic
+            {
+                TopicId = 2,
+                Name = "Movie"
             }
+
         };
 
         public void Seed(EntityTypeBuilder<Topic> builder) => builder.HasData(topics);

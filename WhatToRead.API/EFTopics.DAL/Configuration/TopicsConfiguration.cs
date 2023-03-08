@@ -14,12 +14,7 @@ namespace EFTopics.DAL.Configuration
     {
         public void Configure(EntityTypeBuilder<Topic> builder)
         {
-            builder
-                .HasMany(t => t.PostBlogs)
-                .WithOne(t => t.Topic)
-                .HasForeignKey(t => t.TopicId)
-                .HasPrincipalKey(t => t.TopicId);
-
+          
             builder.Property(project => project.TopicId)
                    .UseIdentityColumn()
                    .IsRequired();

@@ -1,5 +1,6 @@
 ﻿using EFTopics.DAL.Configuration;
 using EFTopics.DAL.Entities;
+using EFTopics.DAL.Seeding;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ namespace EFTopics.DAL.Data
             modelBuilder.ApplyConfiguration(new TopicsConfiguration());
             modelBuilder.ApplyConfiguration(new PostConfiguration());
             modelBuilder.ApplyConfiguration(new PostBlogConfiguration());
+
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

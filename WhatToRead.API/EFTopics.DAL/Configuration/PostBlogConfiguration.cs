@@ -1,7 +1,7 @@
 ﻿using EFTopics.DAL.Entities;
 using EFTopics.DAL.Seeding;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,8 +14,7 @@ namespace EFTopics.DAL.Configuration
     {
         public void Configure(EntityTypeBuilder<PostBlog> builder)
         {
-            builder
-                .HasKey(x => new { x.PostId, x.TopicId });
+            new PostBlogSeeder().Seed(builder);
         }
     }
 }
