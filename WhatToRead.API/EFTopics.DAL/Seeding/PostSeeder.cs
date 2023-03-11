@@ -1,5 +1,5 @@
-﻿using EFTopics.DAL.Builders;
-using EFTopics.DAL.Entities;
+﻿using EFTopics.DAL.Entities;
+using EFWhatToRead_DAL.Seeding;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;

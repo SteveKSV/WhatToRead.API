@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 using EFTopics.DAL.Entities;
 using EFTopics.DAL.Seeding;
 
-namespace EFTopics.DAL.Configuration
+namespace EFWhatToRead_DAL.Data.Configuration
 {
     public class TopicsConfiguration : IEntityTypeConfiguration<Topic>
     {
         public void Configure(EntityTypeBuilder<Topic> builder)
         {
-          
+
             builder.Property(project => project.TopicId)
                    .UseIdentityColumn()
                    .IsRequired();

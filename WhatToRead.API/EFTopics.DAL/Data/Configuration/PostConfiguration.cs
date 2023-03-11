@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EFTopics.DAL.Configuration
+namespace EFWhatToRead_DAL.Data.Configuration
 {
     public class PostConfiguration : IEntityTypeConfiguration<Post>
     {
@@ -22,7 +22,7 @@ namespace EFTopics.DAL.Configuration
                         .HasOne(pt => pt.Topic)
                         .WithMany(t => t.PostBlogs)
                         .HasForeignKey(t => t.TopicId)
-                        .HasPrincipalKey(t=>t.TopicId),
+                        .HasPrincipalKey(t => t.TopicId),
                     j => j
                         .HasOne(pt => pt.Post)
                         .WithMany(pt => pt.PostBlogs)
@@ -30,7 +30,7 @@ namespace EFTopics.DAL.Configuration
                         .HasPrincipalKey(t => t.PostId),
                     j =>
                     {
-                        j.HasKey(t=> new {t.PostId, t.TopicId});
+                        j.HasKey(t => new { t.PostId, t.TopicId });
                         j.ToTable("PostBlogs");
                     });
             new PostSeeder().Seed(builder);

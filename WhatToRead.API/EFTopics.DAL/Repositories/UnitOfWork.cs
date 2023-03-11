@@ -1,13 +1,14 @@
 ﻿using EFTopics.DAL.Entities;
-using EFTopics.DAL.Interfaces.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EFTopics.DAL.Interfaces;
+using EFTopics.DAL.Data;
+using EFWhatToRead_DAL.Repositories.Interfaces.Repositories;
+using EFWhatToRead_DAL.Repositories.Interfaces;
 
-namespace EFTopics.DAL.Data.Repositories
+namespace EFWhatToRead_DAL.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {

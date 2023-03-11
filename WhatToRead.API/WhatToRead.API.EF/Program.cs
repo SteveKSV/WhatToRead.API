@@ -1,18 +1,17 @@
 using EFTopics.DAL.Data;
-using EFTopics.DAL.Data.Repositories;
-using EFTopics.DAL.Interfaces.Repositories;
-using EFTopics.DAL.Interfaces;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
+using EFWhatToRead_DAL.Repositories;
+using EFWhatToRead_DAL.Repositories.Interfaces.Repositories;
+using EFWhatToRead_DAL.Repositories.Interfaces;
+using EFWhatToRead_BBL.Managers.Interfaces;
+using EFWhatToRead_BBL.Managers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddControllers().AddJsonOptions(x =>
-                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -24,8 +23,14 @@ builder.Services.AddDbContext<ApplicationContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("sqlConnection"));
 });
 
+// AutoMapper Configuration
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+// DI Configurations - Business Layer
+builder.Services.AddScoped<ITopicManager, TopicManager>();
+builder.Services.AddScoped<IPostManager, PostManager>();
 
+// DI Configurations - Data Access Layer
 builder.Services.AddScoped<ITopicsRepository, TopicsRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

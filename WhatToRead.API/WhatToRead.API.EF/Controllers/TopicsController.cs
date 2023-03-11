@@ -1,8 +1,9 @@
 ﻿using EFTopics.DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
-using EFTopics.DAL.Interfaces;
 using AutoMapper;
 using EFTopics.DAL.Data;
+using EFWhatToRead_DAL.Repositories.Interfaces;
+using EFWhatToRead_BBL.Managers.Interfaces;
 using EFTopics.DAL.Dtos;
 
 namespace WhatToRead.API.EF.Controllers
@@ -11,17 +12,14 @@ namespace WhatToRead.API.EF.Controllers
     [ApiController]
     public class TopicController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<TopicController> _logger;
-        private readonly IMapper _mapper;
         private readonly ApplicationContext _dbContext;
-        public TopicController(IUnitOfWork unitOfWork, ILogger<TopicController> logger, IMapper mapper, ApplicationContext context)
+        private ITopicManager TopicManager { get; }
+        public TopicController(ITopicManager topicManager, ILogger<TopicController> logger, IMapper mapper, ApplicationContext context)
         {
-
-            _unitOfWork = unitOfWork;
             _logger = logger;
-            _mapper = mapper;
             _dbContext = context;
+            TopicManager = topicManager;
         }
 
         [HttpGet]
@@ -30,7 +28,7 @@ namespace WhatToRead.API.EF.Controllers
         {
             try
             {
-                var results = _mapper.Map<List<TopicDto>>(await _unitOfWork.TopicsRepository.GetAllEntitiesAsync());
+                var results = await TopicManager.GetAllTopics();
 
                 _logger.LogInformation($"Отримали всі дані з бази даних!");
                 return Ok(results);
@@ -49,7 +47,7 @@ namespace WhatToRead.API.EF.Controllers
         {
             try
             {
-                var result = _mapper.Map<TopicDto>(await _unitOfWork.TopicsRepository.GetEntityByIdAsync(id));
+                var result = await TopicManager.GetTopicById(id);
 
                 _logger.LogInformation($"Отримали всі дані з бази даних!");
                 return Ok(result);
@@ -74,8 +72,7 @@ namespace WhatToRead.API.EF.Controllers
                     return BadRequest("Обєкт Topic null");
                 }
 
-                var topic = await _unitOfWork.TopicsRepository.GetAllEntitiesAsync();
-                topic = topic.Where(p => p.Name.Trim().ToUpper() == topicCreate.Name.Trim().ToUpper());
+                var topic = await TopicManager.CreateTopic(topicCreate);
 
                 if (topic == null)
                 {
@@ -89,19 +86,8 @@ namespace WhatToRead.API.EF.Controllers
                     return BadRequest("Обєкт Topic є некоректним");
                 }
 
-                var topicMap = _mapper.Map<Topic>(topicCreate);
-
-                if (!await _unitOfWork.TopicsRepository.CreateEntityAsync(topicMap))
-                {
-                    ModelState.AddModelError("", "Щось пішло не так під час зберігання!");
-                    return StatusCode(500, ModelState);
-                }
-
-
                 return Ok("Успішно доданий новий Topic!");
-            }
-
-            catch (Exception ex)
+            } catch (Exception ex)
             {
                 _logger.LogError($"Транзакція сфейлилась! Щось пішло не так у методі Insert - {ex.Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, "вот так вот!");
@@ -121,14 +107,14 @@ namespace WhatToRead.API.EF.Controllers
                     return NotFound();
                 }
 
-                var topicToDelete = await _unitOfWork.TopicsRepository.GetEntityByIdAsync(topicId);
+                var topicToDelete = await TopicManager.DeleteTopicById(topicId);
 
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
                 }
 
-                if (!await _unitOfWork.TopicsRepository.DeleteEntityAsync(topicToDelete))
+                if (!topicToDelete)
                 {
                     ModelState.AddModelError("", "Щось пішло не так під час видалення Topic!");
                 }
@@ -164,16 +150,13 @@ namespace WhatToRead.API.EF.Controllers
                 if (!_dbContext.Topics.Any(c => c.TopicId == topicId))
                     return NotFound();
 
-
                 if (!ModelState.IsValid)
                 {
                     _logger.LogInformation($"Ми отримали некоректний json зі сторони клієнта");
                     return BadRequest("Об'єкт topic є некоректним");
                 }
 
-                var topicMap = _mapper.Map<Topic>(updatedTopic);
-
-                if (!await _unitOfWork.TopicsRepository.UpdateEntityAsync(topicMap))
+                if (!await TopicManager.UpdateTopicById(updatedTopic))
                 {
                     ModelState.AddModelError("", "Щось пішло не так під час оновлення Topic!");
                     return StatusCode(500, ModelState);

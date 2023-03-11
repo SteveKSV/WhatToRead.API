@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EFTopics.DAL.Configuration
+namespace EFWhatToRead_DAL.Data.Configuration
 {
     public class PostBlogConfiguration : IEntityTypeConfiguration<PostBlog>
     {

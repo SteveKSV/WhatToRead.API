@@ -2,11 +2,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using EFTopics.DAL.Data;
 using EFTopics.DAL.Exceptions;
-using EFTopics.DAL.Interfaces.Repositories;
+using EFWhatToRead_DAL.Repositories.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 
-namespace EFTopics.DAL.Data.Repositories
+namespace EFWhatToRead_DAL.Repositories
 {
     public abstract class GenericRepository<TEntity> : IRepository<TEntity> where TEntity : class
     {
@@ -18,15 +18,18 @@ namespace EFTopics.DAL.Data.Repositories
             table = _dbContext.Set<TEntity>();
         }
 
-        public async Task<bool> CreateEntityAsync(TEntity entity)
+        public async Task<TEntity> CreateEntityAsync(TEntity entity)
         {
-            await _dbContext.AddAsync(entity);
-            return await SaveAsync();
+            await table.AddAsync(entity);
+            await _dbContext.SaveChangesAsync();
+
+            return entity;
         }
 
-        public async Task<bool> DeleteEntityAsync(TEntity entity)
+        public async Task<bool> DeleteEntityAsync(int id)
         {
-            _dbContext.Remove(entity);
+            var entity = await table.FindAsync(id);
+            table.Remove(entity);
             return await SaveAsync();
         }
 
@@ -44,14 +47,8 @@ namespace EFTopics.DAL.Data.Repositories
                 throw new EntityNotFoundException(
                 GetEntityNotFoundErrorMessage(id));
             }
-            
-            return entity;
-        }
 
-        public async Task<bool> SaveAsync()
-        {
-            var saved = await _dbContext.SaveChangesAsync();
-            return saved > 0 ? true : false;
+            return entity;
         }
 
         public async Task<bool> UpdateEntityAsync(TEntity entity)
@@ -62,5 +59,10 @@ namespace EFTopics.DAL.Data.Repositories
 
         protected static string GetEntityNotFoundErrorMessage(int id) =>
             $"{typeof(TEntity).Name} with id {id} not found.";
+                public async Task<bool> SaveAsync()
+        {
+            var saved = await _dbContext.SaveChangesAsync();
+            return saved > 0 ? true : false;
+        }
     }
 }

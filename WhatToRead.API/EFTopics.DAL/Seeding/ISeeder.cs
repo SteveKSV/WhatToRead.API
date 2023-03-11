@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EFTopics.DAL.Builders
+namespace EFWhatToRead_DAL.Seeding
 {
     public interface ISeeder<T> where T : class
     {

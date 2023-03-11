@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using EFTopics.DAL.Interfaces.Repositories;
+using EFWhatToRead_DAL.Repositories.Interfaces.Repositories;
 
-namespace EFTopics.DAL.Interfaces
+namespace EFWhatToRead_DAL.Repositories.Interfaces
 {
     public interface IUnitOfWork
     {

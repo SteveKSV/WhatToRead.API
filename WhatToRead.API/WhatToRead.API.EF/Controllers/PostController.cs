@@ -4,7 +4,9 @@ using EFTopics.DAL.Dtos;
 using EFTopics.DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using EFTopics.DAL.Interfaces;
+using EFWhatToRead_DAL.Repositories.Interfaces;
+using EFWhatToRead_BBL.Managers.Interfaces;
+using EFWhatToRead_BBL.Managers;
 
 namespace WhatToRead.API.EF.Controllers
 {
@@ -12,17 +14,14 @@ namespace WhatToRead.API.EF.Controllers
     [ApiController]
     public class PostController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<PostController> _logger;
-        private readonly IMapper _mapper;
+        private readonly ILogger<TopicController> _logger;
         private readonly ApplicationContext _dbContext;
-        public PostController(IUnitOfWork unitOfWork, ILogger<PostController> logger, IMapper mapper, ApplicationContext context)
+        private IPostManager PostManager { get; }
+        public PostController(IPostManager postManager, ILogger<TopicController> logger, IMapper mapper, ApplicationContext context)
         {
-
-            _unitOfWork = unitOfWork;
             _logger = logger;
-            _mapper = mapper;
             _dbContext = context;
+            PostManager = postManager;
         }
 
         [HttpGet]
@@ -31,7 +30,7 @@ namespace WhatToRead.API.EF.Controllers
         {
             try
             {
-                var results = _mapper.Map<List<PostDto>>(await _unitOfWork.PostRepository.GetAllEntitiesAsync());
+                var results = await PostManager.GetAllPosts();
 
                 _logger.LogInformation($"Отримали всі дані з бази даних!");
                 return Ok(results);
@@ -50,7 +49,7 @@ namespace WhatToRead.API.EF.Controllers
         {
             try
             {
-                var result = _mapper.Map<PostDto>(await _unitOfWork.PostRepository.GetEntityByIdAsync(id));
+                var result = await PostManager.GetPostById(id);
 
                 _logger.LogInformation($"Отримали всі дані з бази даних!");
                 return Ok(result);
@@ -75,8 +74,7 @@ namespace WhatToRead.API.EF.Controllers
                     return BadRequest("Обєкт post null");
                 }
 
-                var post = await _unitOfWork.PostRepository.GetAllEntitiesAsync();
-                post = post.Where(p=>p.Title.Trim().ToUpper() == postCreate.Title.Trim().ToUpper());
+                var post = await PostManager.CreatePost(postCreate);
 
                 if (post == null)
                 {
@@ -90,19 +88,8 @@ namespace WhatToRead.API.EF.Controllers
                     return BadRequest("Обєкт post є некоректним");
                 }
 
-                var postMap = _mapper.Map<Post>(postCreate);
-
-                if (!await _unitOfWork.PostRepository.CreateEntityAsync(postMap))
-                {
-                    ModelState.AddModelError("", "Щось пішло не так під час зберігання!");
-                    return StatusCode(500, ModelState);
-                }
-
-
                 return Ok("Успішно доданий новий post!");
-            }
-
-            catch (Exception ex)
+            } catch (Exception ex)
             {
                 _logger.LogError($"Транзакція сфейлилась! Щось пішло не так у методі Insert - {ex.Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, "вот так вот!");
@@ -122,18 +109,18 @@ namespace WhatToRead.API.EF.Controllers
                     return NotFound();
                 }
 
-                var postToDelete = await _unitOfWork.PostRepository.GetEntityByIdAsync(postId);
+                var postToDelete = await PostManager.DeletePostById(postId);
 
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
                 }
 
-                if(!await _unitOfWork.PostRepository.DeleteEntityAsync(postToDelete))
+                if (!postToDelete)
                 {
                     ModelState.AddModelError("", "Щось пішло не так під час видалення post!");
                 }
-                
+
                 return NoContent();
             }
             catch (Exception ex)
@@ -157,14 +144,13 @@ namespace WhatToRead.API.EF.Controllers
                     return BadRequest("Обєкт topic є null");
                 }
 
-                if(postId != updatedPost.PostId)
+                if (postId != updatedPost.PostId)
                 {
                     return BadRequest(ModelState);
                 }
 
-                if(!_dbContext.Posts.Any(c => c.PostId == postId))
+                if (!_dbContext.Posts.Any(c => c.PostId == postId))
                     return NotFound();
-
 
                 if (!ModelState.IsValid)
                 {
@@ -172,9 +158,7 @@ namespace WhatToRead.API.EF.Controllers
                     return BadRequest("Об'єкт topic є некоректним");
                 }
 
-                var postMap = _mapper.Map<Post>(updatedPost);
-
-                if (!await _unitOfWork.PostRepository.UpdateEntityAsync(postMap))
+                if (!await PostManager.UpdatePostById(updatedPost))
                 {
                     ModelState.AddModelError("", "Щось пішло не так під час оновлення post!");
                     return StatusCode(500, ModelState);

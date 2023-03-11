@@ -1,12 +1,6 @@
-﻿using EFTopics.DAL.Configuration;
+﻿using EFWhatToRead_DAL.Data.Configuration;
 using EFTopics.DAL.Entities;
-using EFTopics.DAL.Seeding;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EFTopics.DAL.Data
 {
