@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using EFWhatToRead_DAL.Repositories.Interfaces;
 using EFWhatToRead_BBL.Managers.Interfaces;
 using EFWhatToRead_BBL.Managers;
+using EFWhatToRead_DAL.Params;
 
 namespace WhatToRead.API.EF.Controllers
 {
@@ -26,11 +27,11 @@ namespace WhatToRead.API.EF.Controllers
 
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Post>))]
-        public async Task<IActionResult> GetAllPosts()
+        public async Task<IActionResult> GetAllPosts([FromQuery] PageModel pagination)
         {
             try
             {
-                var results = await PostManager.GetAllPosts();
+                var results = await PostManager.GetAllPosts(pagination);
 
                 _logger.LogInformation($"Отримали всі дані з бази даних!");
                 return Ok(results);

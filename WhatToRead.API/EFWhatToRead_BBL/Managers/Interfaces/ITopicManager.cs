@@ -1,4 +1,5 @@
 ﻿using EFTopics.DAL.Dtos;
+using EFWhatToRead_DAL.Params;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace EFWhatToRead_BBL.Managers.Interfaces
     public interface ITopicManager
     {
         Task<TopicDto> CreateTopic (TopicDto topic);
-        Task<IEnumerable<TopicDto>> GetAllTopics ();
+        Task<IEnumerable<TopicDto>> GetAllTopics (PageModel pagination);
         Task<TopicDto> GetTopicById(int topicId);
         Task<bool> UpdateTopicById(TopicDto entity);
         Task<bool> DeleteTopicById(int topicId);

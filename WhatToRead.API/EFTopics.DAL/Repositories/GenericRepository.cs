@@ -33,9 +33,12 @@ namespace EFWhatToRead_DAL.Repositories
             return await SaveAsync();
         }
 
-        public async Task<IEnumerable<TEntity>> GetAllEntitiesAsync()
+        public async Task<List<TEntity>> GetAllEntitiesAsync(int pageNumber, int pageSize)
         {
-            return await table.ToListAsync();
+            return await table
+                   .Skip((pageNumber - 1) * pageSize)
+                   .Take(pageSize)
+                   .ToListAsync();
         }
 
         public async Task<TEntity> GetEntityByIdAsync(int id)

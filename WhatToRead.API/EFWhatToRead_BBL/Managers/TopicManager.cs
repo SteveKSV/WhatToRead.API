@@ -2,6 +2,7 @@
 using EFTopics.DAL.Dtos;
 using EFTopics.DAL.Entities;
 using EFWhatToRead_BBL.Managers.Interfaces;
+using EFWhatToRead_DAL.Params;
 using EFWhatToRead_DAL.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -36,9 +37,9 @@ namespace EFWhatToRead_BBL.Managers
             return response;
         }
 
-        public async Task<IEnumerable<TopicDto>> GetAllTopics()
+        public async Task<IEnumerable<TopicDto>> GetAllTopics(PageModel pagination)
         {
-            var response = await UnitOfWork.TopicsRepository.GetAllEntitiesAsync();
+            var response = await UnitOfWork.TopicsRepository.GetAllEntitiesAsync(pagination.PageNumber, pagination.PageSize);
 
             return Mapper.Map<IEnumerable<TopicDto>>(response);
         }

@@ -5,6 +5,7 @@ using EFTopics.DAL.Data;
 using EFWhatToRead_DAL.Repositories.Interfaces;
 using EFWhatToRead_BBL.Managers.Interfaces;
 using EFTopics.DAL.Dtos;
+using EFWhatToRead_DAL.Params;
 
 namespace WhatToRead.API.EF.Controllers
 {
@@ -24,11 +25,11 @@ namespace WhatToRead.API.EF.Controllers
 
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Topic>))]
-        public async Task<IActionResult> GetAllTopics()
+        public async Task<IActionResult> GetAllTopics([FromQuery] PageModel pagination)
         {
             try
             {
-                var results = await TopicManager.GetAllTopics();
+                var results = await TopicManager.GetAllTopics(pagination);
 
                 _logger.LogInformation($"Отримали всі дані з бази даних!");
                 return Ok(results);
