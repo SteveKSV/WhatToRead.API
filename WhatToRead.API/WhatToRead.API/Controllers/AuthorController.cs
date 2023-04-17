@@ -6,12 +6,21 @@ using WhatToRead.Core.Models;
 
 namespace WhatToRead.API.Controllers
 {
+    /// <summary>
+    /// This api handles all logic for authors. 
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class AuthorController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<AuthorController> _logger;
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="unitOfWork"></param>
         public AuthorController(IUnitOfWork unitOfWork, ILogger<AuthorController> logger)
         {
 
@@ -19,8 +28,21 @@ namespace WhatToRead.API.Controllers
             _logger = logger;
         }
 
-        // GET: api/author
+        /// <summary>
+        /// Returns all authors async.
+        /// </summary>
+        /// <returns>Authors with all their information</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     Get /api/author
+        ///
+        /// </remarks>
+        /// <response code="200">Returns all authors with all their information</response>
+        /// <response code="400"></response>
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> GetAllAsync()
         {
             try
@@ -37,8 +59,22 @@ namespace WhatToRead.API.Controllers
             }
         }
 
-        // GET: api/author/Id
+        /// <summary>
+        /// Returns author by id async.
+        /// </summary>
+        /// <param name="id">The id of author</param>
+        /// <returns>Author by id with all his/her information</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     Get /api/author/5
+        ///
+        /// </remarks>
+        /// <response code="200">Returns author by id with all his/her information</response>
+        /// <response code="400">This author doesn't exist</response>
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> GetById(int id)
         {
             try
@@ -64,8 +100,22 @@ namespace WhatToRead.API.Controllers
             }
         }
 
-        // POST: api/author
+        /// <summary>
+        /// Creates a new author.
+        /// </summary>
+        /// <param name="author">Author to add</param>
+        /// <returns>StatusCode</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     post /api/author/
+        ///
+        /// </remarks>
+        /// <response code="200">Author is created successfully</response>
+        /// <response code="400">There is some problem in method or invalid input</response>
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Add([FromBody] Author author)
         {
             try
@@ -91,8 +141,22 @@ namespace WhatToRead.API.Controllers
             }
         }
 
-        //GET: api/author/Id
+        /// <summary>
+        /// Deletes an author by id.
+        /// </summary>
+        /// <param name="id">The id of author</param>
+        /// <returns>StatusCode</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     delete /api/author/5
+        ///
+        /// </remarks>
+        /// <response code="200">Author is deleted successfully</response>
+        /// <response code="400">There is some problem in method</response>
         [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -114,7 +178,21 @@ namespace WhatToRead.API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "вот так вот!");
             }
         }
-        //POST: api/author/id
+
+        /// <summary>
+        /// Updates an author by id.
+        /// </summary>
+        /// <param name="id">The id of author</param>
+        /// <param name="author">Updated author</param>
+        /// <returns>StatusCode</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     put /api/author/5
+        ///
+        /// </remarks>
+        /// <response code="200">Author is updated successfully</response>
+        /// <response code="400">There is some problem in method</response>
         [HttpPut]
         public async Task<IActionResult> Update(int id, [FromBody] Author author)
         {

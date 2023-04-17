@@ -5,13 +5,21 @@ using WhatToRead.Core.Models;
 
 namespace WhatToRead.API.Controllers
 {
-
+    /// <summary>
+    /// This api handles all logic for languages 
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class LanguageController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<LanguageController> _logger;
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="unitOfWork"></param>
         public LanguageController(IUnitOfWork unitOfWork, ILogger<LanguageController> logger)
         {
 
@@ -19,7 +27,18 @@ namespace WhatToRead.API.Controllers
             _logger = logger;
         }
 
-        // GET: api/author
+        /// <summary>
+        /// Returns all languages async.
+        /// </summary>
+        /// <returns>Languages information</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     Get /api/language
+        ///
+        /// </remarks>
+        /// <response code="200">Returns all languages information</response>
+        /// <response code="400"></response>
         [HttpGet]
         public async Task<ActionResult> GetAllAsync()
         {
@@ -37,7 +56,19 @@ namespace WhatToRead.API.Controllers
             }
         }
 
-        // GET: api/author/Id
+        /// <summary>
+        /// Returns language by id async.
+        /// </summary>
+        /// <param name="id">The id of language</param>
+        /// <returns>Language by id</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     Get /api/language/5
+        ///
+        /// </remarks>
+        /// <response code="200">Returns language by id</response>
+        /// <response code="400">This language doesn't exist</response>
         [HttpGet("{id}")]
         public async Task<ActionResult> GetById(int id)
         {
@@ -64,7 +95,19 @@ namespace WhatToRead.API.Controllers
             }
         }
 
-        // POST: api/author
+        /// <summary>
+        /// Creates a new language.
+        /// </summary>
+        /// <param name="entity">Language to add</param>
+        /// <returns>StatusCode</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     post /api/language/
+        ///
+        /// </remarks>
+        /// <response code="200">Language is created successfully</response>
+        /// <response code="400">There is some problem in method or invalid input</response>
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] Book_Language entity)
         {
@@ -91,7 +134,19 @@ namespace WhatToRead.API.Controllers
             }
         }
 
-        //GET: api/author/Id
+        /// <summary>
+        /// Deletes an language by id.
+        /// </summary>
+        /// <param name="id">The id of language</param>
+        /// <returns>StatusCode</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     delete /api/language/5
+        ///
+        /// </remarks>
+        /// <response code="200">Language is deleted successfully</response>
+        /// <response code="400">There is some problem in method</response>
         [HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
@@ -114,7 +169,21 @@ namespace WhatToRead.API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "вот так вот!");
             }
         }
-        //POST: api/author/id
+
+        /// <summary>
+        /// Updates an language by id.
+        /// </summary>
+        /// <param name="id">The id of language</param>
+        /// <param name="language">Updated language</param>
+        /// <returns>StatusCode</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     put /api/language/5
+        ///
+        /// </remarks>
+        /// <response code="200">Language is updated successfully</response>
+        /// <response code="400">There is some problem in method</response>
         [HttpPut]
         public async Task<IActionResult> Update(int id, [FromBody] Book_Language language)
         {
