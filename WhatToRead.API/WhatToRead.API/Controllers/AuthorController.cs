@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using WhatToRead.API.AdoNet.BBL.Dtos;
+using WhatToRead.API.AdoNet.BBL.Managers.Interfaces;
 using WhatToRead.API.AdoNet.DB.Repositories.Interfaces;
 using WhatToRead.API.Core.Models;
 using WhatToRead.Core.Models;
@@ -15,17 +17,19 @@ namespace WhatToRead.API.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<AuthorController> _logger;
-
+        private readonly IAuthorManager _authorManager;
         /// <summary>
         ///
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="unitOfWork"></param>
-        public AuthorController(IUnitOfWork unitOfWork, ILogger<AuthorController> logger)
+        /// <param name="authorManager"></param>
+        public AuthorController(IUnitOfWork unitOfWork, ILogger<AuthorController> logger, IAuthorManager authorManager)
         {
 
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _authorManager = authorManager;
         }
 
         /// <summary>
@@ -47,8 +51,7 @@ namespace WhatToRead.API.Controllers
         {
             try
             {
-                var results = await _unitOfWork.Authors.GetAllAsync();
-                _unitOfWork.Commit();
+                var results = await _authorManager.GetAllEntities();
                 _logger.LogInformation($"Отримали всі дані з бази даних!");
                 return Ok(results);
             }
@@ -79,8 +82,7 @@ namespace WhatToRead.API.Controllers
         {
             try
             {
-                var result = await _unitOfWork.Authors.GetByIdAsync(id);
-                _unitOfWork.Commit();
+                var result = await _authorManager.GetEntityById(id);
                 if (result == null)
                 {
                     _logger.LogInformation($"Автор із Id: {id}, не був знайдейний у базі даних");
@@ -116,7 +118,7 @@ namespace WhatToRead.API.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Add([FromBody] Author author)
+        public async Task<IActionResult> Add([FromBody] AuthorDTO author)
         {
             try
             {
@@ -130,8 +132,7 @@ namespace WhatToRead.API.Controllers
                     _logger.LogInformation($"Ми отримали некоректний json зі сторони клієнта");
                     return BadRequest("Обєкт автор є некоректним");
                 }
-                var created_id = await _unitOfWork.Authors.AddAsync(author);
-                _unitOfWork.Commit();
+                var created_id = await _authorManager.Create(author);
                 return StatusCode(StatusCodes.Status201Created);
             }
             catch (Exception ex)
@@ -161,15 +162,14 @@ namespace WhatToRead.API.Controllers
         {
             try
             {
-                var entity = await _unitOfWork.Authors.GetByIdAsync(id);
+                var entity = await _authorManager.GetEntityById(id);
                 if (entity == null)
                 {
                     _logger.LogInformation($"Автор із Id: {id}, не був знайдейний у базі даних");
                     return NotFound();
                 }
 
-                await _unitOfWork.Authors.DeleteAsync(id);
-                _unitOfWork.Commit();
+                await _authorManager.DeleteEntityById(id);
                 return NoContent();
             }
             catch (Exception ex)
@@ -194,7 +194,7 @@ namespace WhatToRead.API.Controllers
         /// <response code="200">Author is updated successfully</response>
         /// <response code="400">There is some problem in method</response>
         [HttpPut]
-        public async Task<IActionResult> Update(int id, [FromBody] Author author)
+        public async Task<IActionResult> Update(int id, [FromBody] AuthorDTO author)
         {
             try
             {
@@ -209,15 +209,14 @@ namespace WhatToRead.API.Controllers
                     return BadRequest("Об'єкт автор є некоректним");
                 }
 
-                var entity = await _unitOfWork.Authors.GetByIdAsync(id);
+                var entity = await _authorManager.GetEntityById(id);
                 if (entity == null)
                 {
                     _logger.LogInformation($"Автор із Id: {id}, не був знайдейний у базі даних");
                     return NotFound();
                 }
 
-                await _unitOfWork.Authors.UpdateAsync(author);
-                _unitOfWork.Commit();
+                await _authorManager.UpdateEntityById(author);
                 return StatusCode(StatusCodes.Status204NoContent);
             }
             catch (Exception ex)

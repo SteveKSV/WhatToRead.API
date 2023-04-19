@@ -1,6 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using WhatToRead.API.AdoNet.BBL.Dtos;
+using WhatToRead.API.AdoNet.BBL.Managers;
+using WhatToRead.API.AdoNet.BBL.Managers.Interfaces;
 using WhatToRead.API.AdoNet.DB.Repositories.Interfaces;
 using WhatToRead.API.Core.Models;
 using WhatToRead.Core.Models;
@@ -17,17 +20,20 @@ namespace WhatToRead.API.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<BookController> _logger;
+        private readonly IBookManager _bookManager;
 
         /// <summary>
         ///
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="unitOfWork"></param>
-        public BookController(IUnitOfWork unitOfWork, ILogger<BookController> logger)
+        /// <param name="bookManager"></param>
+        public BookController(IUnitOfWork unitOfWork, ILogger<BookController> logger, IBookManager bookManager)
         {
 
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _bookManager = bookManager;
         }
 
         /// <summary>
@@ -47,8 +53,7 @@ namespace WhatToRead.API.Controllers
         {
             try
             {
-                var results = await _unitOfWork.Books.GetAllAsync();
-                _unitOfWork.Commit();
+                var results = await _bookManager.GetAllEntities();
                 _logger.LogInformation($"Отримали всі книги з бази даних!");
                 return Ok(results);
             }
@@ -77,8 +82,7 @@ namespace WhatToRead.API.Controllers
         {
             try
             {
-                var result = await _unitOfWork.Books.GetByIdAsync(id);
-                _unitOfWork.Commit();
+                var result = await _bookManager.GetEntityById(id);
                 if (result == null)
                 {
                     _logger.LogInformation($"Книга із Id: {id}, не була знайдена у базі даних");
@@ -114,13 +118,11 @@ namespace WhatToRead.API.Controllers
         [Route("GetBookByAuthorId/{id}")]
         [HttpGet]
 
-
         public async Task<ActionResult> GetBookByAuthorId(int id)
         {
             try
             {
-                var result = await _unitOfWork.Books.GetBookByAuthorId(id);
-                _unitOfWork.Commit();
+                var result = await _bookManager.GetBookByAuthorId(id);
                 if (result == null)
                 {
                     _logger.LogInformation($"Книга із Author_Id: {id}, не була знайдена у базі даних");
@@ -158,8 +160,7 @@ namespace WhatToRead.API.Controllers
         {
             try
             {
-                var result = await _unitOfWork.Books.GetAllBooksWithPublisherName();
-                _unitOfWork.Commit();
+                var result = await _bookManager.GetAllBooksWithPublisherName();
                 _logger.LogInformation($"Отримали книгу з publisher з бази даних!");
                 return Ok(result);
             }
@@ -189,8 +190,7 @@ namespace WhatToRead.API.Controllers
         {
             try
             {
-                var result = await _unitOfWork.Books.GetBookByPublisherId(id);
-                _unitOfWork.Commit();
+                var result = await _bookManager.GetBookByPublisherId(id);
                 if (result == null)
                 {
                     _logger.LogInformation($"Книга із Publisher_Id: {id}, не була знайдена у базі даних");
@@ -212,24 +212,24 @@ namespace WhatToRead.API.Controllers
         /// <summary>
         /// Returns books which date is higher than date in params.
         /// </summary>
-        /// <param name="date">The date that will be used for search of books</param>
+        /// <param name="strDate">The date that will be used for search of books</param>
         /// <returns>Books by date up</returns>
         /// <remarks>
         /// Sample request:
         ///
-        ///     Get /api/book/GetBooksByDateUp/date
+        ///     Get /api/book/GetBooksByDateUp/03.11.2003
         ///
         /// </remarks>
         /// <response code="200">Returns books which date is higher than date in params</response>
         /// <response code="400">There is a problem in method or books which date is higher than date in params don't exist</response>
-        [Route("GetBooksByDateUp/{date}")]
+        [Route("GetBooksByDateUp/{strDate}")]
         [HttpGet]
-        public async Task<ActionResult> GetBookByPublisher(DateTime date)
+        public async Task<ActionResult> GetBookByPublisher(string strDate)
         {
             try
             {
-                var result = await _unitOfWork.Books.GetBooksByDateUp(date);
-                _unitOfWork.Commit();
+                var date = DateTime.Parse(strDate);
+                var result = await _bookManager.GetBooksByDateUp(date);
                 if (result == null)
                 {
                     _logger.LogInformation($"Книги з датою вище: {date}, не були знайдені у базі даних");
@@ -262,7 +262,7 @@ namespace WhatToRead.API.Controllers
         /// <response code="200">Book is created successfully</response>
         /// <response code="400">There is some problem in method or invalid input</response>
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] Book entity)
+        public async Task<IActionResult> Add([FromBody] BookDTO entity)
         {
             try
             {
@@ -276,8 +276,7 @@ namespace WhatToRead.API.Controllers
                     _logger.LogInformation($"Ми отримали некоректний json зі сторони клієнта");
                     return BadRequest("Об'єкт книга є некоректним");
                 }
-                var created_id = await _unitOfWork.Books.AddAsync(entity);
-                _unitOfWork.Commit();
+                var created_id = await _bookManager.Create(entity);
                 return StatusCode(StatusCodes.Status201Created);
             }
             catch (Exception ex)
@@ -305,15 +304,14 @@ namespace WhatToRead.API.Controllers
         {
             try
             {
-                var entity = await _unitOfWork.Books.GetByIdAsync(id);
+                var entity = await _bookManager.GetEntityById(id);
                 if (entity == null)
                 {
                     _logger.LogInformation($"Книга із Id: {id}, не була знайдена у базі даних");
                     return NotFound();
                 }
 
-                await _unitOfWork.Books.DeleteAsync(id);
-                _unitOfWork.Commit();
+                await _bookManager.DeleteEntityById(id);
                 return NoContent();
             }
             catch (Exception ex)
@@ -338,7 +336,7 @@ namespace WhatToRead.API.Controllers
         /// <response code="200">Book is updated successfully</response>
         /// <response code="400">There is some problem in method book by this id doesn't exist</response>
         [HttpPut]
-        public async Task<IActionResult> Update(int id, [FromBody] Book book)
+        public async Task<IActionResult> Update(int id, [FromBody] BookDTO book)
         {
             try
             {
@@ -353,15 +351,14 @@ namespace WhatToRead.API.Controllers
                     return BadRequest("Об'єкт книга є некоректним");
                 }
 
-                var entity = await _unitOfWork.Books.GetByIdAsync(id);
+                var entity = await _bookManager.GetEntityById(id);
                 if (entity == null)
                 {
                     _logger.LogInformation($"Книга із Id: {id}, не була знайдена у базі даних");
                     return NotFound();
                 }
 
-                await _unitOfWork.Books.UpdateAsync(book);
-                _unitOfWork.Commit();
+                await _bookManager.UpdateEntityById(book);
                 return StatusCode(StatusCodes.Status204NoContent);
             }
             catch (Exception ex)

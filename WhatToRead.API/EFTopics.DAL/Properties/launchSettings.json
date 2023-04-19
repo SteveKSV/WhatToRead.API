@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "EFWhatToRead_DAL": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:61142;http://localhost:61144"
+    }
+  }
+}

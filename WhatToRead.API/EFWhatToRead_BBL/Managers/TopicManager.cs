@@ -25,7 +25,7 @@ namespace EFWhatToRead_BBL.Managers
 
         public async Task<TopicDto> CreateTopic(TopicDto topic)
         {
-            var entity = Mapper.Map<Topic>(topic);
+            var entity = Mapper.Map<TopicDto, Topic>(topic);
             var response = await UnitOfWork.TopicsRepository.CreateEntityAsync(entity);
             
             return Mapper.Map<TopicDto>(response);

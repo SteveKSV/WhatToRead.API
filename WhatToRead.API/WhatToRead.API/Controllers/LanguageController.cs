@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WhatToRead.API.AdoNet.BBL.Dtos;
+using WhatToRead.API.AdoNet.BBL.Managers.Interfaces;
 using WhatToRead.API.AdoNet.DB.Repositories.Interfaces;
 using WhatToRead.API.Core.Models;
 using WhatToRead.Core.Models;
@@ -14,17 +16,20 @@ namespace WhatToRead.API.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<LanguageController> _logger;
+        private readonly ILanguageManager _languageManager;
 
         /// <summary>
         ///
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="unitOfWork"></param>
-        public LanguageController(IUnitOfWork unitOfWork, ILogger<LanguageController> logger)
+        /// <param name="languageManager"></param>
+        public LanguageController(IUnitOfWork unitOfWork, ILogger<LanguageController> logger, ILanguageManager languageManager)
         {
 
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _languageManager = languageManager;
         }
 
         /// <summary>
@@ -44,8 +49,7 @@ namespace WhatToRead.API.Controllers
         {
             try
             {
-                var results = await _unitOfWork.Languages.GetAllAsync();
-                _unitOfWork.Commit();
+                var results = await _languageManager.GetAllEntities();
                 _logger.LogInformation($"Отримали всі мови з бази даних!");
                 return Ok(results);
             }
@@ -74,8 +78,7 @@ namespace WhatToRead.API.Controllers
         {
             try
             {
-                var result = await _unitOfWork.Languages.GetByIdAsync(id);
-                _unitOfWork.Commit();
+                var result = await _languageManager.GetEntityById(id);
                 if (result == null)
                 {
                     _logger.LogInformation($"Мова із Id: {id}, не була знайдена у базі даних");
@@ -109,7 +112,7 @@ namespace WhatToRead.API.Controllers
         /// <response code="200">Language is created successfully</response>
         /// <response code="400">There is some problem in method or invalid input</response>
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] Book_Language entity)
+        public async Task<IActionResult> Add([FromBody] Book_LanguageDTO entity)
         {
             try
             {
@@ -123,7 +126,7 @@ namespace WhatToRead.API.Controllers
                     _logger.LogInformation($"Ми отримали некоректний json зі сторони клієнта");
                     return BadRequest("Об'єкт мова є некоректним");
                 }
-                var created_id = await _unitOfWork.Languages.AddAsync(entity);
+                var created_id = await _languageManager.Create(entity);
                 _unitOfWork.Commit();
                 return StatusCode(StatusCodes.Status201Created);
             }
@@ -152,15 +155,14 @@ namespace WhatToRead.API.Controllers
         {
             try
             {
-                var entity = await _unitOfWork.Languages.GetByIdAsync(id);
+                var entity = await _languageManager.GetEntityById(id);
                 if (entity == null)
                 {
                     _logger.LogInformation($"Мова із Id: {id}, не була знайдена у базі даних");
                     return NotFound();
                 }
 
-                await _unitOfWork.Languages.DeleteAsync(id);
-                _unitOfWork.Commit();
+                await _languageManager.DeleteEntityById(id);
                 return NoContent();
             }
             catch (Exception ex)
@@ -185,7 +187,7 @@ namespace WhatToRead.API.Controllers
         /// <response code="200">Language is updated successfully</response>
         /// <response code="400">There is some problem in method</response>
         [HttpPut]
-        public async Task<IActionResult> Update(int id, [FromBody] Book_Language language)
+        public async Task<IActionResult> Update(int id, [FromBody] Book_LanguageDTO language)
         {
             try
             {
@@ -200,15 +202,14 @@ namespace WhatToRead.API.Controllers
                     return BadRequest("Об'єкт мова є некоректним");
                 }
 
-                var entity = await _unitOfWork.Languages.GetByIdAsync(id);
+                var entity = await _languageManager.GetEntityById(id);
                 if (entity == null)
                 {
                     _logger.LogInformation($"Мова із Id: {id}, не був знайдена у базі даних");
                     return NotFound();
                 }
 
-                await _unitOfWork.Languages.UpdateAsync(language);
-                _unitOfWork.Commit();
+                await _languageManager.UpdateEntityById(language);
                 return StatusCode(StatusCodes.Status204NoContent);
             }
             catch (Exception ex)

@@ -3,6 +3,8 @@ using System.Data.SqlClient;
 using System.Data;
 using WhatToRead.API;
 using System.Reflection;
+using WhatToRead.API.AdoNet.BBL.Managers.Interfaces;
+using WhatToRead.API.AdoNet.BBL.Managers;
 
 internal class Program
 {
@@ -33,7 +35,17 @@ internal class Program
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             c.IncludeXmlComments(xmlPath);
         });
-        
+
+
+        // AutoMapper Configuration
+        builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+        // BBL
+        builder.Services.AddScoped<IAuthorManager, AuthorManager>();
+        builder.Services.AddScoped<IBookManager, BookManager>();
+        builder.Services.AddScoped<ILanguageManager, LanguageManager>();
+        builder.Services.AddScoped<IPublisherManager, PublisherManager>();
+
         // Connection/Transaction for ADO.NET/DAPPER database
         builder.Services.AddScoped((s) => new SqlConnection(builder.Configuration.GetConnectionString("DapperConnection")));
         builder.Services.AddScoped<IDbTransaction>(s =>
@@ -44,6 +56,7 @@ internal class Program
         });
 
         builder.Services.AddApplication();
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.

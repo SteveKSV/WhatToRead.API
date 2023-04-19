@@ -24,7 +24,7 @@ namespace EFWhatToRead_BBL.Managers
         private IMapper Mapper { get; }
         public async Task<PostDto> CreatePost(PostDto post)
         {
-            var entity = Mapper.Map<Post>(post);
+            var entity = Mapper.Map<PostDto, Post>(post);
             var response = await UnitOfWork.PostRepository.CreateEntityAsync(entity);
 
             return Mapper.Map<PostDto>(response);
