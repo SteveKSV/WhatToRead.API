@@ -33,7 +33,7 @@ namespace EFWhatToRead_DAL.Repositories
             return await SaveAsync();
         }
 
-        public async Task<List<TEntity>> GetAllEntitiesAsync(int pageNumber, int pageSize)
+        public async Task<List<TEntity>> GetAllEntitiesAsync(int pageNumber = 1, int pageSize = 1)
         {
             return await table
                    .Skip((pageNumber - 1) * pageSize)

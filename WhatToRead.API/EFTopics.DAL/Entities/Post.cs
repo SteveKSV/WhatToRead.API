@@ -16,8 +16,8 @@ namespace EFTopics.DAL.Entities
         public string Image { get; set; }
         public string Body { get; set; }
         public bool Published { get; set; }
-        public DateTime Created_At { get; set; }
-        public DateTime Updated_At { get; set; }
+        public DateTime? Created_At { get; set; }
+        public DateTime? Updated_At { get; set; }
 
         public ICollection<Topic> Topics { get; set; }
         public ICollection<PostBlog> PostBlogs { get; set; }

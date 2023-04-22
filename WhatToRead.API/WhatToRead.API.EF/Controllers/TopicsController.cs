@@ -6,6 +6,7 @@ using EFWhatToRead_DAL.Repositories.Interfaces;
 using EFWhatToRead_BBL.Managers.Interfaces;
 using EFTopics.DAL.Dtos;
 using EFWhatToRead_DAL.Params;
+using Microsoft.Extensions.Hosting;
 
 namespace WhatToRead.API.EF.Controllers
 {
@@ -25,15 +26,35 @@ namespace WhatToRead.API.EF.Controllers
 
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Topic>))]
-        public async Task<IActionResult> GetAllTopics([FromQuery] PageModel pagination)
+        public async Task<IActionResult> GetAllTopics([FromQuery] PageModel pagination, [FromQuery] string? name = null, [FromQuery] string? sortByName = null)
         {
             try
             {
-                var results = await TopicManager.GetAllTopics(pagination);
+                // Pagination
+                var topics = await TopicManager.GetAllTopics(pagination);
 
+                // Searching
+                if (!string.IsNullOrEmpty(name))
+                {
+                    topics = topics.Where(p => p.Name.Contains(name));
+                }
+
+                // Sorting
+                if (!string.IsNullOrEmpty(sortByName))
+                {
+                    if (sortByName.ToLower() == "asc")
+                    {
+                        topics = topics.OrderBy(p => p.Name);
+                    }
+                    else if (sortByName.ToLower() == "desc")
+                    {
+                        topics = topics.OrderByDescending(p => p.Name);
+                    }
+                }
                 _logger.LogInformation($"Отримали всі дані з бази даних!");
-                return Ok(results);
+                return Ok(topics);
             }
+
             catch (Exception ex)
             {
                 _logger.LogError($"Транзакція сфейлилась! Щось пішло не так у методі GetAllTopics() - {ex.Message}");
@@ -67,6 +88,12 @@ namespace WhatToRead.API.EF.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogInformation($"Ми отримали некоректний json зі сторони клієнта");
+                    return BadRequest(ModelState);
+                }
+
                 if (topicCreate == null)
                 {
                     _logger.LogInformation($"Ми отримали пустий json зі сторони клієнта");
@@ -81,11 +108,7 @@ namespace WhatToRead.API.EF.Controllers
                     return StatusCode(422, ModelState);
                 }
 
-                if (!ModelState.IsValid)
-                {
-                    _logger.LogInformation($"Ми отримали некоректний json зі сторони клієнта");
-                    return BadRequest("Обєкт Topic є некоректним");
-                }
+                
 
                 return Ok("Успішно доданий новий Topic!");
             } catch (Exception ex)

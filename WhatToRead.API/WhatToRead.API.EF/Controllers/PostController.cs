@@ -8,6 +8,10 @@ using EFWhatToRead_DAL.Repositories.Interfaces;
 using EFWhatToRead_BBL.Managers.Interfaces;
 using EFWhatToRead_BBL.Managers;
 using EFWhatToRead_DAL.Params;
+using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
+using FluentValidation;
+using System.ComponentModel.DataAnnotations;
 
 namespace WhatToRead.API.EF.Controllers
 {
@@ -17,24 +21,62 @@ namespace WhatToRead.API.EF.Controllers
     {
         private readonly ILogger<TopicController> _logger;
         private readonly ApplicationContext _dbContext;
+        private readonly IValidator<PostDto> _validator;
         private IPostManager PostManager { get; }
-        public PostController(IPostManager postManager, ILogger<TopicController> logger, IMapper mapper, ApplicationContext context)
+        public PostController(IPostManager postManager, ILogger<TopicController> logger, IMapper mapper, ApplicationContext context, IValidator<PostDto> validator)
         {
             _logger = logger;
             _dbContext = context;
             PostManager = postManager;
+            _validator = validator;
         }
 
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Post>))]
-        public async Task<IActionResult> GetAllPosts([FromQuery] PageModel pagination)
+        public async Task<IActionResult> GetAllPosts([FromQuery] PageModel pagination, [FromQuery] DateModel? dateModel = null, [FromQuery] string? title = null, [FromQuery] string? sortByTitle = null)
         {
+
             try
             {
-                var results = await PostManager.GetAllPosts(pagination);
+                // Pagination
+                var posts = await PostManager.GetAllPosts(pagination);
+
+                // Filtering
+                if (dateModel?.StartDate != null && dateModel?.EndDate != null)
+                {
+                    var startDate = dateModel.StartDate;
+                    var endDate = dateModel.EndDate;
+
+                    if (startDate.ToString() != "01.01.0001 0:00:00")
+                    posts = posts.Where(p => p.Created_At >= startDate);
+
+                    if (endDate.ToString() != "01.01.0001 0:00:00")
+                    {
+                        posts = posts.Where(p => p.Created_At <= endDate);
+                    }
+                }
+
+                // Searching
+                if (!string.IsNullOrEmpty(title))
+                {
+                    posts = posts.Where(p => p.Title.Contains(title));
+                }
+
+                // Sorting
+                if (!string.IsNullOrEmpty(sortByTitle))
+                {
+                    if (sortByTitle.ToLower() == "asc")
+                    {
+                        posts = posts.OrderBy(p => p.Title);
+                    }
+                    else if (sortByTitle.ToLower() == "desc")
+                    {
+                        posts = posts.OrderByDescending(p => p.Title);
+                    }
+                }
 
                 _logger.LogInformation($"Отримали всі дані з бази даних!");
-                return Ok(results);
+                return Ok(posts);
             }
             catch (Exception ex)
             {
@@ -69,6 +111,13 @@ namespace WhatToRead.API.EF.Controllers
         {
             try
             {
+                var validationResult = await _validator.ValidateAsync(postCreate);
+
+                if (!validationResult.IsValid)
+                {
+                    return BadRequest(validationResult.Errors);
+                }
+
                 if (postCreate == null)
                 {
                     _logger.LogInformation($"Ми отримали пустий json зі сторони клієнта");
@@ -86,7 +135,7 @@ namespace WhatToRead.API.EF.Controllers
                 if (!ModelState.IsValid)
                 {
                     _logger.LogInformation($"Ми отримали некоректний json зі сторони клієнта");
-                    return BadRequest("Обєкт post є некоректним");
+                    return BadRequest(ModelState);
                 }
 
                 return Ok("Успішно доданий новий post!");

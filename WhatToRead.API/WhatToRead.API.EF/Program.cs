@@ -6,6 +6,9 @@ using EFWhatToRead_DAL.Repositories.Interfaces.Repositories;
 using EFWhatToRead_DAL.Repositories.Interfaces;
 using EFWhatToRead_BBL.Managers.Interfaces;
 using EFWhatToRead_BBL.Managers;
+using EFTopics.DAL.Dtos;
+using EFWhatToRead_BBL.Helpers;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +28,7 @@ builder.Services.AddDbContext<ApplicationContext>(options =>
 
 // AutoMapper Configuration
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
+builder.Services.AddTransient<IValidator<PostDto>, PostValidator>();
 // DI Configurations - Business Layer
 builder.Services.AddScoped<ITopicManager, TopicManager>();
 builder.Services.AddScoped<IPostManager, PostManager>();
