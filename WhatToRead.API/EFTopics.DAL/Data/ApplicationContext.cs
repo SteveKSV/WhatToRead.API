@@ -1,10 +1,12 @@
 ﻿using EFWhatToRead_DAL.Data.Configuration;
 using EFTopics.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace EFTopics.DAL.Data
 {
-    public class ApplicationContext : DbContext
+    public class ApplicationContext : IdentityDbContext<IdentityUser>
     {
         public DbSet<Topic> Topics { get; set; }
         public DbSet<Post> Posts { get; set; }

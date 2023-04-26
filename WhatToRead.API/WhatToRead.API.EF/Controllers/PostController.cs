@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using FluentValidation;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WhatToRead.API.EF.Controllers
 {
@@ -23,7 +24,7 @@ namespace WhatToRead.API.EF.Controllers
         private readonly ApplicationContext _dbContext;
         private readonly IValidator<PostDto> _validator;
         private IPostManager PostManager { get; }
-        public PostController(IPostManager postManager, ILogger<TopicController> logger, IMapper mapper, ApplicationContext context, IValidator<PostDto> validator)
+        public PostController(IPostManager postManager, ILogger<TopicController> logger, ApplicationContext context, IValidator<PostDto> validator)
         {
             _logger = logger;
             _dbContext = context;
@@ -31,7 +32,9 @@ namespace WhatToRead.API.EF.Controllers
             _validator = validator;
         }
 
+        
         [HttpGet]
+        [Authorize]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Post>))]
         public async Task<IActionResult> GetAllPosts([FromQuery] PageModel pagination, [FromQuery] DateModel? dateModel = null, [FromQuery] string? title = null, [FromQuery] string? sortByTitle = null)
         {
