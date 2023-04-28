@@ -131,6 +131,7 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = issuer,
         ValidAudience = audience,
         IssuerSigningKey = signingKey,
+        ClockSkew = TimeSpan.Zero
     };
 });
 
@@ -147,7 +148,7 @@ builder.Services.AddTransient<IValidator<PostDto>, PostValidator>();
 // DI Configurations - Business Layer
 builder.Services.AddScoped<ITopicManager, TopicManager>();
 builder.Services.AddScoped<IPostManager, PostManager>();
-
+builder.Services.AddScoped<IAccountManager, AccountManager>();
 // DI Configurations - Data Access Layer
 builder.Services.AddScoped<ITopicsRepository, TopicsRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();

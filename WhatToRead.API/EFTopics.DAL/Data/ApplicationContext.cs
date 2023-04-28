@@ -3,6 +3,7 @@ using EFTopics.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using EFWhatToRead_DAL.Entities;
 
 namespace EFTopics.DAL.Data
 {
@@ -11,6 +12,7 @@ namespace EFTopics.DAL.Data
         public DbSet<Topic> Topics { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<PostBlog> PostBlogs { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

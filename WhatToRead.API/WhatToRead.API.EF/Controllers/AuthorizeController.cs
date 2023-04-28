@@ -1,4 +1,6 @@
-﻿using EFWhatToRead_BBL.Models;
+﻿using EFWhatToRead_BBL.Dtos;
+using EFWhatToRead_BBL.Managers.Interfaces;
+using EFWhatToRead_BBL.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -16,12 +18,13 @@ namespace WhatToRead.API.EF.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly JwtSettings _options;
-
-        public AuthorizeController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IOptions<JwtSettings> options)
+        private readonly IAccountManager _accountManager;
+        public AuthorizeController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IOptions<JwtSettings> options, IAccountManager accountManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _options = options.Value;
+            _accountManager = accountManager;
         }
 
         [HttpPost("Register")]
@@ -52,37 +55,13 @@ namespace WhatToRead.API.EF.Controllers
             return Ok();
         }
 
-        private string GetToken(IdentityUser user, IEnumerable<Claim> principal)
-        {
-            var claims = principal.ToList();
-            claims.Add(new Claim(ClaimTypes.Name, "Stepan"));
-
-            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));
-
-            var jwt = new JwtSecurityToken(
-                    issuer: _options.Issuer,
-                    audience: _options.Audience,
-                    claims: claims,
-                    expires: DateTime.UtcNow.AddMinutes(1),
-                    notBefore: DateTime.UtcNow,
-                    signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
-                );
-
-            return new JwtSecurityTokenHandler().WriteToken(jwt);
-        }
-
         [HttpPost("SignIn")]
         public async Task<IActionResult> SignIn(LoginModel paramUser)
         {
-            var user = await _userManager.FindByEmailAsync(paramUser.Email);
+            var token = await _accountManager.GetAuthTokens(paramUser);
 
-            var result = await _signInManager.PasswordSignInAsync(user, paramUser.Password, false, false);
-
-            if (result.Succeeded)
+            if (token != null)
             {
-                IEnumerable<Claim> claims = await _userManager.GetClaimsAsync(user);
-                var token = GetToken(user, claims);
-
                 return Ok(token);
             }
 
@@ -127,6 +106,18 @@ namespace WhatToRead.API.EF.Controllers
             }
 
             return Ok();
+        }
+
+        [HttpPost]
+        [Route("Renew-Token")]
+        public async Task<IActionResult> RenewTokens(RenewTokenDto refreshToken)
+        {
+            var tokens = await _accountManager.RenewTokens(refreshToken);
+            if (tokens == null)
+            {
+                return ValidationProblem("Invalid Refresh Token");
+            }
+            return Ok(tokens);
         }
     }
 }
