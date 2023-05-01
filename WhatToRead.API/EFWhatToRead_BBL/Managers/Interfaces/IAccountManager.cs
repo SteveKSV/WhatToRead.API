@@ -7,5 +7,6 @@ namespace EFWhatToRead_BBL.Managers.Interfaces
     {
         Task<TokenDto?> GetAuthTokens(LoginModel login);
         Task<TokenDto?> RenewTokens(RenewTokenDto refreshToken);
+        Task<RevokeTokenResponseDto?> RevokeTokens(RevokeTokenRequestDto revokeToken);
     }
 }

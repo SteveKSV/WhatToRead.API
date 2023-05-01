@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using EFWhatToRead_BBL.Models;
+using EFTopics.DAL.Data;
 
 namespace WhatToRead.API.EF.Controllers
 {
@@ -18,13 +19,18 @@ namespace WhatToRead.API.EF.Controllers
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly JwtSettings _options;
-
-        public UserController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, RoleManager<IdentityRole> roleManager, IOptions<JwtSettings> options)
+        private readonly ApplicationContext _context;
+        public UserController(UserManager<IdentityUser> userManager,
+                              SignInManager<IdentityUser> signInManager,
+                              RoleManager<IdentityRole> roleManager,
+                              IOptions<JwtSettings> options,
+                              ApplicationContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _options = options.Value;
             _roleManager = roleManager;
+            _context = context;
         }
 
         [HttpGet("users")]
@@ -194,6 +200,27 @@ namespace WhatToRead.API.EF.Controllers
             }
 
             return BadRequest(result.Errors);
+        }
+
+        [HttpPost("users/{userId}/refresh-tokens")]
+        [Authorize(Policy = "OnlyAdmin")]
+
+        public async Task<IActionResult> GetUserRefreshTokensById(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound("User is not found");
+            }
+
+            var refreshTokens = await _context.RefreshTokens.Where(u=>u.UserId == userId).ToListAsync();
+
+            if (refreshTokens.IsNullOrEmpty())
+            {
+                return NotFound($"There are not refresh tokens for user with id {userId}");
+            }
+
+            return Ok(refreshTokens);
         }
     }
 

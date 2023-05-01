@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EFWhatToRead_BBL.Dtos
 {
-    public class RevokeTokenDto
+    public class RevokeTokenRequestDto
     {
         public string Token { get; set; }
     }

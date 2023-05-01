@@ -1,8 +1,10 @@
 ﻿using EFWhatToRead_BBL.Dtos;
 using EFWhatToRead_BBL.Managers.Interfaces;
 using EFWhatToRead_BBL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -119,5 +121,20 @@ namespace WhatToRead.API.EF.Controllers
             }
             return Ok(tokens);
         }
+
+        [HttpPost("Revoke-Token")]
+        [Authorize]
+        public async Task<IActionResult> RevokeRefreshToken([FromBody] RevokeTokenRequestDto request)
+        {
+            if (string.IsNullOrEmpty(request.Token))
+            {
+                return BadRequest("Token is required.");
+            }
+
+            await _accountManager.RevokeTokens(request);
+
+            return Ok();
+        }
+
     }
 }

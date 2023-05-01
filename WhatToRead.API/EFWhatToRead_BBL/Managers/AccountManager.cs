@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using EFTopics.DAL.Data;
 using EFWhatToRead_BBL.Dtos;
 using EFWhatToRead_BBL.Managers.Interfaces;
@@ -32,37 +33,6 @@ namespace EFWhatToRead_BBL.Managers
             Mapper = mapper;
         }
 
-        private string GetToken(IEnumerable<Claim> principal)
-        {
-            var claims = principal.ToList();
-
-            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
-
-            var jwt = new JwtSecurityToken(
-                    issuer: _jwtSettings.Issuer,
-                    audience: _jwtSettings.Audience,
-                    claims: claims,
-                    expires: DateTime.UtcNow.AddMinutes(1),
-                    notBefore: DateTime.UtcNow,
-                    signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(jwt);
-        }
-
-        private string CreateRefreshToken()
-        {
-            var tokenBytes = RandomNumberGenerator.GetBytes(64);
-            var refreshtoken = Convert.ToBase64String(tokenBytes);
-
-            var tokenIsInUser = _context.RefreshTokens.Any(_ => _.Token == refreshtoken);
-
-            if (tokenIsInUser)
-            {
-                return CreateRefreshToken();
-            }
-            return refreshtoken;
-        }
         public async Task<TokenDto?> GetAuthTokens(LoginModel login)
         {
             var user = await _userManager.FindByEmailAsync(login.Email);
@@ -90,20 +60,6 @@ namespace EFWhatToRead_BBL.Managers
             {
                 return null;
             }
-        }
-
-        private async Task InsertRefreshToken(string userId, string refreshtoken)
-        {
-            var newRefreshTokenDto = new RefreshTokenDto
-            {
-                UserId = userId,
-                Token = refreshtoken,
-                ExpirationDate = DateTime.Now.AddDays(7)
-            };
-
-            var newRefreshToken = Mapper.Map<RefreshTokenDto, RefreshToken>(newRefreshTokenDto);
-            _context.RefreshTokens.Add(newRefreshToken);
-            await _context.SaveChangesAsync();
         }
         public async Task<TokenDto?> RenewTokens(RenewTokenDto refreshToken)
         {
@@ -139,6 +95,65 @@ namespace EFWhatToRead_BBL.Managers
                 AccessToken = newJwtToken,
                 RefreshToken = newRefreshToken
             };
+        }
+        public async Task<RevokeTokenResponseDto?> RevokeTokens(RevokeTokenRequestDto revokeToken)
+        {
+            var refreshToken = _context.RefreshTokens.SingleOrDefault(r => r.Token == revokeToken.Token);
+
+            if (refreshToken == null)
+            {
+                return new RevokeTokenResponseDto { isSucceeded = false, Message = "Token wasn't found" };
+            }
+
+            _context.RefreshTokens.Remove(refreshToken);
+            await _context.SaveChangesAsync();
+
+            return new RevokeTokenResponseDto { isSucceeded = true, Message = "Token was found and revoked" };
+        }
+
+        // Helping methods
+        private string GetToken(IEnumerable<Claim> principal)
+        {
+            var claims = principal.ToList();
+
+            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
+
+            var jwt = new JwtSecurityToken(
+                    issuer: _jwtSettings.Issuer,
+                    audience: _jwtSettings.Audience,
+                    claims: claims,
+                    expires: DateTime.UtcNow.AddMinutes(1),
+                    notBefore: DateTime.UtcNow,
+                    signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(jwt);
+        }
+        private string CreateRefreshToken()
+        {
+            var tokenBytes = RandomNumberGenerator.GetBytes(64);
+            var refreshtoken = Convert.ToBase64String(tokenBytes);
+
+            var tokenIsInUser = _context.RefreshTokens.Any(_ => _.Token == refreshtoken);
+
+            if (tokenIsInUser)
+            {
+                return CreateRefreshToken();
+            }
+            return refreshtoken;
+        }
+        private async Task InsertRefreshToken(string userId, string refreshtoken)
+        {
+            var newRefreshTokenDto = new RefreshTokenDto
+            {
+                UserId = userId,
+                Token = refreshtoken,
+                ExpirationDate = DateTime.Now.AddDays(7)
+            };
+
+            var newRefreshToken = Mapper.Map<RefreshTokenDto, RefreshToken>(newRefreshTokenDto);
+            _context.RefreshTokens.Add(newRefreshToken);
+            await _context.SaveChangesAsync();
         }
     }
 }
