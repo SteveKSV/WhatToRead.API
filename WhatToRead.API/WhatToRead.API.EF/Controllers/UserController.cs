@@ -11,6 +11,9 @@ using EFTopics.DAL.Data;
 
 namespace WhatToRead.API.EF.Controllers
 {
+    /// <summary>
+    /// Controller for user logic, such as view users, their roles, roles, jwt-tokens and so on. 
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class UserController : ControllerBase
@@ -18,21 +21,30 @@ namespace WhatToRead.API.EF.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly JwtSettings _options;
         private readonly ApplicationContext _context;
+       
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="userManager"></param>
+        /// <param name="signInManager"></param>
+        /// <param name="roleManager"></param>
+        /// <param name="context"></param>
         public UserController(UserManager<IdentityUser> userManager,
                               SignInManager<IdentityUser> signInManager,
                               RoleManager<IdentityRole> roleManager,
-                              IOptions<JwtSettings> options,
                               ApplicationContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _options = options.Value;
             _roleManager = roleManager;
             _context = context;
         }
 
+        /// <summary>
+        /// Method for getting a list of all users that are registered. Only for admin to use.
+        /// </summary>
+        /// <returns>List of users</returns>
         [HttpGet("users")]
         [Authorize(Policy = "OnlyAdmin")]
         public async Task<IActionResult> GetUsers()
@@ -41,6 +53,11 @@ namespace WhatToRead.API.EF.Controllers
             return Ok(users);
         }
 
+        /// <summary>
+        /// Method for getting a user by user's id. Only for admin to use.
+        /// </summary>
+        /// <param name="userId">User id</param>
+        /// <returns>A user</returns>
         [HttpGet("users/{userId}")]
         [Authorize(Policy = "OnlyAdmin")]
         public async Task<IActionResult> GetUser(string userId)
@@ -54,6 +71,11 @@ namespace WhatToRead.API.EF.Controllers
             return Ok(user);
         }
 
+        /// <summary>
+        /// Method for deleting a user by their id. Only for admin to use.
+        /// </summary>
+        /// <param name="userId">User id</param>
+        /// <returns>Status Code</returns>
         [HttpDelete("users/{userId}")]
         [Authorize(Policy = "OnlyAdmin")]
         public async Task<IActionResult> DeleteUser(string userId)
@@ -73,13 +95,18 @@ namespace WhatToRead.API.EF.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Method for creating a user. Only for admin to use.
+        /// </summary>
+        /// <param name="model">User paramaters</param>
+        /// <returns>User</returns>
         [HttpPost("users")]
         [Authorize(Policy = "OnlyAdmin")]
         public async Task<IActionResult> CreateUser([FromBody] OtherParamUser model)
         {
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser { UserName = model.Email, Email = model.Email };
+                var user = new IdentityUser { UserName = model.UserName, Email = model.Email };
 
                 var result = await _userManager.CreateAsync(user, model.Password);
                 
@@ -96,7 +123,10 @@ namespace WhatToRead.API.EF.Controllers
             return BadRequest(ModelState);
         }
 
-
+        /// <summary>
+        /// Method for getting a list of all roles. Only for admin to use.
+        /// </summary>
+        /// <returns>List of roles</returns>
         [HttpGet("roles")]
         [Authorize(Policy = "OnlyAdmin")]
         public async Task<IActionResult> GetRoles()
@@ -105,6 +135,11 @@ namespace WhatToRead.API.EF.Controllers
             return Ok(roles);
         }
 
+        /// <summary>
+        /// Method for creating a new role. Only for admin to use.
+        /// </summary>
+        /// <param name="newRole">Name of the role</param>
+        /// <returns>Message, which tells if operation was successfull.</returns>
         [HttpPost("roles")]
         [Authorize(Policy = "OnlyAdmin")]
         public async Task<IActionResult> CreateRoles(string? newRole)
@@ -128,6 +163,11 @@ namespace WhatToRead.API.EF.Controllers
             return BadRequest($"Role is not created");
         }
 
+        /// <summary>
+        /// Method for deleting a role by it's id. Only for admin to use.
+        /// </summary>
+        /// <param name="roleId">Role's id</param>
+        /// <returns>StatusCode</returns>
         [HttpDelete("roles/{roleId}")]
         [Authorize(Policy = "OnlyAdmin")]
         public async Task<IActionResult> DeleteRole(string roleId)
@@ -147,6 +187,12 @@ namespace WhatToRead.API.EF.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Method for adding a role to user by user's id. Only for admin to use. 
+        /// </summary>
+        /// <param name="userId">User's id</param>
+        /// <param name="model">Model for a role (contains it's name)</param>
+        /// <returns>StatusCode</returns>
         [HttpPost("users/{userId}/roles")]
         [Authorize(Policy = "OnlyAdmin")]
         public async Task<IActionResult> AddRoleToUser(string userId, [FromBody] AddRoleModel model)
@@ -172,6 +218,12 @@ namespace WhatToRead.API.EF.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Method for removing a role from user by user's id. Only for admin to use.
+        /// </summary>
+        /// <param name="userId">User's id</param>
+        /// <param name="model">Model for a role (contains it's name)</param>
+        /// <returns></returns>
         [HttpDelete("users/{userId}/roles")]
         [Authorize(Policy = "OnlyAdmin")]
         public async Task<IActionResult> RemoveRoleFromUser(string userId, [FromBody] AddRoleModel model)
@@ -202,6 +254,11 @@ namespace WhatToRead.API.EF.Controllers
             return BadRequest(result.Errors);
         }
 
+        /// <summary>
+        /// Method for getting a refresh tokens that the user have by user's id. Only for admin to use.
+        /// </summary>
+        /// <param name="userId">User's id</param>
+        /// <returns>List of refresh tokens.</returns>
         [HttpPost("users/{userId}/refresh-tokens")]
         [Authorize(Policy = "OnlyAdmin")]
 

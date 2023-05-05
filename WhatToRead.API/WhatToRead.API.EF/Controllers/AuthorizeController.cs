@@ -13,6 +13,9 @@ using System.Text;
 
 namespace WhatToRead.API.EF.Controllers
 {
+    /// <summary>
+    /// Controller for register, authorization, methods to update password, because user forgot it, and methods for renew and revoke tokens.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class AuthorizeController : ControllerBase
@@ -21,6 +24,11 @@ namespace WhatToRead.API.EF.Controllers
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly JwtSettings _options;
         private readonly IAccountManager _accountManager;
+
+        /// <param name="userManager">Manager for instruments with user.</param>
+        /// <param name="signInManager">Provides an api for user to sign in</param>
+        /// <param name="options"></param>
+        /// <param name="accountManager"></param>
         public AuthorizeController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IOptions<JwtSettings> options, IAccountManager accountManager)
         {
             _userManager = userManager;
@@ -29,6 +37,13 @@ namespace WhatToRead.API.EF.Controllers
             _accountManager = accountManager;
         }
 
+        /// <summary>
+        /// Register a user.
+        /// </summary>
+        /// <param name="paramUser">Email, password, username and role (admin or simple user)</param>
+        /// <returns></returns>
+        /// <response code="200">User is successfully registered</response>
+        /// <response code="400">User registration was not successfull</response>
         [HttpPost("Register")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
@@ -57,6 +72,13 @@ namespace WhatToRead.API.EF.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Login a user.
+        /// </summary>
+        /// <param name="paramUser">Email, password</param>
+        /// <returns>Token model (access token and refresh token)</returns>
+        /// <response code="200">User is successfully loged in</response>
+        /// <response code="400">User logging was not successfull</response>
         [HttpPost("SignIn")]
         public async Task<IActionResult> SignIn(LoginModel paramUser)
         {
@@ -70,6 +92,13 @@ namespace WhatToRead.API.EF.Controllers
             return BadRequest();
         }
 
+        /// <summary>
+        /// Gives us a token for reseting a password.
+        /// </summary>
+        /// <param name="model">Email for getting token for reset password for this user</param>
+        /// <returns>Reset token for reset password</returns>
+        /// <response code="200">This user is exist and we get a token</response>
+        /// <response code="400">This user isn't exist and we don't get a token</response>
         [HttpPost("Forgot-Password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordModel model)
         {
@@ -92,6 +121,14 @@ namespace WhatToRead.API.EF.Controllers
             return BadRequest(ModelState);
         }
 
+        /// <summary>
+        /// Reset a password for user a user.
+        /// </summary>
+        /// <param name="resetPassword">Email for reseting a password, token for reset password, which we get from forgot-password method,
+        /// new password</param>
+        /// <returns>Status code</returns>
+        /// <response code="200">The password is successfully reseted</response>
+        /// <response code="400">The password isn't successfully reseted</response>
         [HttpPost("Reset-Password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPassword resetPassword)
         {
@@ -110,6 +147,13 @@ namespace WhatToRead.API.EF.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Method for renew tokens.
+        /// </summary>
+        /// <param name="refreshToken">Token for renewing</param>
+        /// <returns>A new tokens</returns>
+        /// <response code="200">The operation of renewing token was successfull</response>
+        /// <response code="400">The operation of renewing token wasn't successfull</response>
         [HttpPost]
         [Route("Renew-Token")]
         public async Task<IActionResult> RenewTokens(RenewTokenDto refreshToken)
@@ -122,6 +166,13 @@ namespace WhatToRead.API.EF.Controllers
             return Ok(tokens);
         }
 
+        /// <summary>
+        /// Method for revoke tokens.
+        /// </summary>
+        /// <param name="request">Token for revokeing</param>
+        /// <returns>Status code</returns>
+        /// <response code="200">The token was successfully revoked</response>
+        /// <response code="400">The token wasn't successfully revoked</response>
         [HttpPost("Revoke-Token")]
         [Authorize]
         public async Task<IActionResult> RevokeRefreshToken([FromBody] RevokeTokenRequestDto request)

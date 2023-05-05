@@ -10,6 +10,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace WhatToRead.API.EF.Controllers
 {
+    /// <summary>
+    /// This api handles all logic for Topic
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class TopicController : ControllerBase
@@ -17,6 +20,11 @@ namespace WhatToRead.API.EF.Controllers
         private readonly ILogger<TopicController> _logger;
         private readonly ApplicationContext _dbContext;
         private ITopicManager TopicManager { get; }
+
+        /// <param name="logger"></param>
+        /// <param name="topicManager"></param>
+        /// <param name="mapper"></param>
+        /// <param name="context"></param>
         public TopicController(ITopicManager topicManager, ILogger<TopicController> logger, IMapper mapper, ApplicationContext context)
         {
             _logger = logger;
@@ -24,8 +32,25 @@ namespace WhatToRead.API.EF.Controllers
             TopicManager = topicManager;
         }
 
+
+        /// <summary>
+        /// Returns all topics async.
+        /// </summary>
+        /// <param name="pagination">Page number and page size to view</param>
+        /// <param name="name">Search by name</param>
+        /// <param name="sortByName">Sort by name (asc or desc)</param>
+        /// <returns>Topics with all their information</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     Get /api/topics
+        ///
+        /// </remarks>
+        /// <response code="200">Returns all topics with all their information</response>
+        /// <response code="400"></response>
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<Topic>))]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<TopicDto>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAllTopics([FromQuery] PageModel pagination, [FromQuery] string? name = null, [FromQuery] string? sortByName = null)
         {
             try
@@ -62,8 +87,22 @@ namespace WhatToRead.API.EF.Controllers
             }
         }
 
+
+        /// <summary>
+        /// Returns topic by id async.
+        /// </summary>
+        /// <param name="id">The id of topic</param>
+        /// <returns>Topic by id with all it's information</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     Get /api/topics/5
+        ///
+        /// </remarks>
+        /// <response code="200">Returns topic by id with all it's information</response>
+        /// <response code="400">This topic doesn't exist</response>
         [HttpGet("{id}")]
-        [ProducesResponseType(200, Type = typeof(Topic))]
+        [ProducesResponseType(200, Type = typeof(TopicDto))]
         [ProducesResponseType(400)]
         public async Task<IActionResult> GetTopicById(int id)
         {
@@ -71,6 +110,8 @@ namespace WhatToRead.API.EF.Controllers
             {
                 var result = await TopicManager.GetTopicById(id);
 
+                if (result == null)
+                    return BadRequest();
                 _logger.LogInformation($"Отримали всі дані з бази даних!");
                 return Ok(result);
             }
@@ -81,6 +122,20 @@ namespace WhatToRead.API.EF.Controllers
             }
         }
 
+
+        /// <summary>
+        /// Creates a new topic.
+        /// </summary>
+        /// <param name="topicCreate">Topic to add</param>
+        /// <returns>StatusCode</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     post /api/author/
+        ///
+        /// </remarks>
+        /// <response code="200">Topic is created successfully</response>
+        /// <response code="400">There is some problem in method or invalid input</response>
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
@@ -118,6 +173,19 @@ namespace WhatToRead.API.EF.Controllers
             }
         }
 
+        /// <summary>
+        /// Deletes an topic by id.
+        /// </summary>
+        /// <param name="topicId">The id of topic</param>
+        /// <returns>StatusCode</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     delete /api/topic/5
+        ///
+        /// </remarks>
+        /// <response code="200">Topic is deleted successfully</response>
+        /// <response code="400">There is some problem in method</response>
         [HttpDelete]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
@@ -152,6 +220,20 @@ namespace WhatToRead.API.EF.Controllers
             }
         }
 
+        /// <summary>
+        /// Updates an topic by id.
+        /// </summary>
+        /// <param name="topicId">The id of topic</param>
+        /// <param name="updatedTopic">Updated topic</param>
+        /// <returns>StatusCode</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     put /api/topic/5
+        ///
+        /// </remarks>
+        /// <response code="200">Topic is updated successfully</response>
+        /// <response code="400">There is some problem in method</response>
         [HttpPut]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]

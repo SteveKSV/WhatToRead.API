@@ -16,15 +16,23 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace WhatToRead.API.EF.Controllers
 {
+    /// <summary>
+    /// This api handles all logic for Post
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class PostController : ControllerBase
     {
-        private readonly ILogger<TopicController> _logger;
+        private readonly ILogger<PostController> _logger;
         private readonly ApplicationContext _dbContext;
         private readonly IValidator<PostDto> _validator;
         private IPostManager PostManager { get; }
-        public PostController(IPostManager postManager, ILogger<TopicController> logger, ApplicationContext context, IValidator<PostDto> validator)
+
+        /// <param name="logger"></param>
+        /// <param name="postManager"></param>
+        /// <param name="validator"></param>
+        /// <param name="context"></param>
+        public PostController(IPostManager postManager, ILogger<PostController> logger, ApplicationContext context, IValidator<PostDto> validator)
         {
             _logger = logger;
             _dbContext = context;
@@ -32,7 +40,22 @@ namespace WhatToRead.API.EF.Controllers
             _validator = validator;
         }
 
-        
+        /// <summary>
+        /// Returns all posts async.
+        /// </summary>
+        /// <param name="pagination">Page number and page size to view</param>
+        /// <param name="dateModel">Filtering by start date and end date</param>
+        /// <param name="title">Search by title</param>
+        /// <param name="sortByTitle">Sort by title (asc or desc)</param>
+        /// <returns>Posts with all their information</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     Get /api/post
+        ///
+        /// </remarks>
+        /// <response code="200">Returns all posts with all their information</response>
+        /// <response code="400"></response>
         [HttpGet]
         [Authorize]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Post>))]
@@ -88,6 +111,19 @@ namespace WhatToRead.API.EF.Controllers
             }
         }
 
+        /// <summary>
+        /// Returns topic by id async.
+        /// </summary>
+        /// <param name="id">The id of post</param>
+        /// <returns>Post by id with all it's information</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     Get /api/post/5
+        ///
+        /// </remarks>
+        /// <response code="200">Returns post by id with all it's information</response>
+        /// <response code="400">This post doesn't exist</response>
         [HttpGet("{id}")]
         [ProducesResponseType(200, Type = typeof(Post))]
         [ProducesResponseType(400)]
@@ -107,6 +143,19 @@ namespace WhatToRead.API.EF.Controllers
             }
         }
 
+        /// <summary>
+        /// Creates a new post.
+        /// </summary>
+        /// <param name="postCreate">Post to add</param>
+        /// <returns>StatusCode</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     post /api/post/
+        ///
+        /// </remarks>
+        /// <response code="200">Post is created successfully</response>
+        /// <response code="400">There is some problem in method or invalid input</response>
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
@@ -149,6 +198,19 @@ namespace WhatToRead.API.EF.Controllers
             }
         }
 
+        /// <summary>
+        /// Deletes an topic by id.
+        /// </summary>
+        /// <param name="postId">The id of post</param>
+        /// <returns>StatusCode</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     delete /api/post/5
+        ///
+        /// </remarks>
+        /// <response code="200">Post is deleted successfully</response>
+        /// <response code="400">There is some problem in method</response>
         [HttpDelete]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
@@ -183,6 +245,20 @@ namespace WhatToRead.API.EF.Controllers
             }
         }
 
+        /// <summary>
+        /// Updates an post by id.
+        /// </summary>
+        /// <param name="postId">The id of post</param>
+        /// <param name="updatedPost">Updated post</param>
+        /// <returns>StatusCode</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     put /api/post/5
+        ///
+        /// </remarks>
+        /// <response code="200">Post is updated successfully</response>
+        /// <response code="400">There is some problem in method</response>
         [HttpPut]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]

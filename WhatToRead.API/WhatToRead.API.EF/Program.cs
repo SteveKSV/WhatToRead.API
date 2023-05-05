@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using EFWhatToRead_BBL.Models;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,6 +63,7 @@ var info = new OpenApiInfo()
 };
 
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(o =>
 {
     o.SwaggerDoc("v1", info);
@@ -73,6 +75,13 @@ builder.Services.AddSwaggerGen(o =>
         In = ParameterLocation.Header,
         Description = "JWT Authorization header using the Bearer scheme.",
     });
+    
+    // Set the comments path for the Swagger JSON and UI.
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    o.IncludeXmlComments(xmlPath);
+
+    // Security
     o.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
