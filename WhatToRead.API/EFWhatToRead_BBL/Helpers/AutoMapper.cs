@@ -18,6 +18,8 @@ namespace EFWhatToRead_BBL.Helpers
             CreateMap<TopicDto, Topic>().ReverseMap();
             CreateMap<PostDto, Post>().ReverseMap();
             CreateMap<RefreshTokenDto, RefreshToken>().ReverseMap();
+            CreateMap<TopicsWithPostsDto, TopicsWithPost>().ReverseMap();
+            CreateMap<PostWithTopicsDto, PostWithTopics>().ReverseMap();
         }
     }
 }

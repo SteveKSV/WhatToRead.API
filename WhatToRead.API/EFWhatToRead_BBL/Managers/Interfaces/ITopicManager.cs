@@ -1,4 +1,6 @@
 ﻿using EFTopics.DAL.Dtos;
+using EFTopics.DAL.Entities;
+using EFWhatToRead_BBL.Dtos;
 using EFWhatToRead_DAL.Params;
 using System;
 using System.Collections.Generic;
@@ -15,5 +17,8 @@ namespace EFWhatToRead_BBL.Managers.Interfaces
         Task<TopicDto> GetTopicById(int topicId);
         Task<bool> UpdateTopicById(TopicDto entity);
         Task<bool> DeleteTopicById(int topicId);
+
+        Task<List<TopicsWithPostsDto>> GetAllTopicsWithPosts();
+        Task<TopicsWithPostsDto?> GetTopicByIdWithPosts(int topicId);
     }
 }

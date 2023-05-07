@@ -1,13 +1,11 @@
 ﻿using EFTopics.DAL.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using EFWhatToRead_DAL.Entities;
 
 namespace EFWhatToRead_DAL.Repositories.Interfaces.Repositories
 {
     public interface ITopicsRepository : IRepository<Topic>
     {
+        Task<List<TopicsWithPost>> GetAllTopicsWithPosts();
+        Task<TopicsWithPost?> GetTopicByIdWithPosts(int topicId);
     }
 }

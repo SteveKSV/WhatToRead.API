@@ -127,7 +127,6 @@ namespace WhatToRead.API.Controllers
                     return BadRequest("Об'єкт мова є некоректним");
                 }
                 var created_id = await _languageManager.Create(entity);
-                _unitOfWork.Commit();
                 return StatusCode(StatusCodes.Status201Created);
             }
             catch (Exception ex)

@@ -275,5 +275,63 @@ namespace WhatToRead.API.EF.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "вот так вот!");
             }
         }
+
+
+        /// <summary>
+        /// Get all topics that have posts
+        /// </summary>
+        /// <returns>List of topics</returns>
+        [HttpGet("GetTopicsWithPosts")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetTopicsWithPosts()
+        {
+            try
+            {
+                var topics = await TopicManager.GetAllTopicsWithPosts();
+
+                if (topics == null)
+                    return BadRequest("Немає!");
+
+                _logger.LogInformation($"Отримали всі дані з бази даних!");
+                return Ok(topics);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError($"Транзакція сфейлилась! Щось пішло не так у методі GetTopicsWithPosts() - {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "вот так вот!");
+            }
+        }
+
+        /// <summary>
+        /// Get topic that have posts by id
+        /// </summary>
+        /// <param name="id">Topic id</param>
+        /// <returns>Topic with posts</returns>
+        [HttpGet("GetTopicByIdWithPosts{id}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetTopicByIdWithPosts(int id)
+        {
+            try
+            {
+                var topic = await TopicManager.GetTopicByIdWithPosts(id);
+
+                if (topic == null)
+                    return BadRequest("Немає!");
+
+                _logger.LogInformation($"Отримали всі дані з бази даних!");
+                return Ok(topic);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError($"Транзакція сфейлилась! Щось пішло не так у методі GetTopicByIdWithPosts() - {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "вот так вот!");
+            }
+        }
     }
 }

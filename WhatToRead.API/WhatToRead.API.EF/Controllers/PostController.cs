@@ -57,7 +57,6 @@ namespace WhatToRead.API.EF.Controllers
         /// <response code="200">Returns all posts with all their information</response>
         /// <response code="400"></response>
         [HttpGet]
-        [Authorize]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Post>))]
         public async Task<IActionResult> GetAllPosts([FromQuery] PageModel pagination, [FromQuery] DateModel? dateModel = null, [FromQuery] string? title = null, [FromQuery] string? sortByTitle = null)
         {
@@ -297,6 +296,63 @@ namespace WhatToRead.API.EF.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Транзакція сфейлилась! Щось пішло не так у методі UpdateAsync - {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "вот так вот!");
+            }
+        }
+
+        /// <summary>
+        /// Get all posts with topics
+        /// </summary>
+        /// <returns>List of posts</returns>
+        [HttpGet("GetAllPostsWithTopics")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetAllPostsWithTopics()
+        {
+            try
+            {
+                var topics = await PostManager.GetAllPostsWithTopics();
+
+                if (topics == null)
+                    return BadRequest("Немає!");
+
+                _logger.LogInformation($"Отримали всі дані з бази даних!");
+                return Ok(topics);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError($"Транзакція сфейлилась! Щось пішло не так у методі GetAllPostsWithTopics() - {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "вот так вот!");
+            }
+        }
+
+        /// <summary>
+        /// Get post with topic by id
+        /// </summary>
+        /// <param name="id">Post id</param>
+        /// <returns>Post with topic</returns>
+        [HttpGet("GetPostWithTopics{id}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetTopicByIdWithPosts(int id)
+        {
+            try
+            {
+                var topic = await PostManager.GetPostByIdWithTopics(id);
+
+                if (topic == null)
+                    return BadRequest("Немає!");
+
+                _logger.LogInformation($"Отримали всі дані з бази даних!");
+                return Ok(topic);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError($"Транзакція сфейлилась! Щось пішло не так у методі GetTopicByIdWithPosts() - {ex.Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, "вот так вот!");
             }
         }

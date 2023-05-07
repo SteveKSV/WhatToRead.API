@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EFTopics.DAL.Dtos;
 using EFTopics.DAL.Entities;
+using EFWhatToRead_BBL.Dtos;
 using EFWhatToRead_BBL.Managers.Interfaces;
 using EFWhatToRead_DAL.Params;
 using EFWhatToRead_DAL.Repositories.Interfaces;
@@ -54,6 +55,18 @@ namespace EFWhatToRead_BBL.Managers
         {
             var response = await UnitOfWork.TopicsRepository.UpdateEntityAsync(Mapper.Map<Topic>(topicDto));
             return response;
+        }
+
+        public async Task<List<TopicsWithPostsDto>> GetAllTopicsWithPosts()
+        {
+            var entities = await UnitOfWork.TopicsRepository.GetAllTopicsWithPosts();
+            return Mapper.Map<List<TopicsWithPostsDto>>(entities);
+        }
+
+        public async Task<TopicsWithPostsDto?> GetTopicByIdWithPosts(int topicId)
+        {
+            var topic = await UnitOfWork.TopicsRepository.GetTopicByIdWithPosts(topicId);
+            return Mapper.Map<TopicsWithPostsDto>(topic);
         }
     }
 }
