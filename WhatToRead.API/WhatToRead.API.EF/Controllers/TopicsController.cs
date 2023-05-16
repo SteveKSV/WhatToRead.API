@@ -49,7 +49,7 @@ namespace WhatToRead.API.EF.Controllers
         /// <response code="200">Returns all topics with all their information</response>
         /// <response code="400"></response>
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<TopicDto>))]
+        [ProducesResponseType(200, Type = typeof(List<TopicDto>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAllTopics([FromQuery] PageModel pagination, [FromQuery] string? name = null, [FromQuery] string? sortByName = null)
         {

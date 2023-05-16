@@ -1,0 +1,40 @@
+﻿@page "/topics"
+@inject TopicService topicService
+@using BlazorApp.EF.Services;
+@using EFTopics.DAL.Dtos;
+
+<h3>Topics</h3>
+@if (topics == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var topic in topics)
+            {
+                <tr>
+                    <td>@topic.TopicId</td>
+                    <td>@topic.Name</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code {
+    List<TopicDto> topics;
+
+    protected override async Task OnInitializedAsync()
+    {
+        topics = await topicService.GetTopicsAsync();
+    }
+}
