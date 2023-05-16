@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace EFTopics.DAL.Entities
+namespace EFTopics.BBL.Entities
 {
     public class Topic
     {

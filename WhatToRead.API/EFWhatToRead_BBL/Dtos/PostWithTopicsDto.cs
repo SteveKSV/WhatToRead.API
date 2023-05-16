@@ -1,6 +1,4 @@
-﻿using EFTopics.DAL.Dtos;
-
-namespace EFWhatToRead_BBL.Dtos
+﻿namespace EFWhatToRead_BBL.Dtos
 {
     public class PostWithTopicsDto
     {

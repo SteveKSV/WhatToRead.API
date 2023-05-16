@@ -1,5 +1,5 @@
-﻿using EFTopics.DAL.Entities;
-using EFTopics.DAL.Seeding;
+﻿using EFTopics.BBL.Entities;
+using EFTopics.BBL.Seeding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;

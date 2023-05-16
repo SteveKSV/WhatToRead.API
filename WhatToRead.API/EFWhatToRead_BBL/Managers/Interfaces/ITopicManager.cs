@@ -1,5 +1,4 @@
-﻿using EFTopics.DAL.Dtos;
-using EFTopics.DAL.Entities;
+﻿using EFTopics.BBL.Entities;
 using EFWhatToRead_BBL.Dtos;
 using EFWhatToRead_DAL.Params;
 using System;
@@ -20,5 +19,6 @@ namespace EFWhatToRead_BBL.Managers.Interfaces
 
         Task<List<TopicsWithPostsDto>> GetAllTopicsWithPosts();
         Task<TopicsWithPostsDto?> GetTopicByIdWithPosts(int topicId);
+        Task<int> GetTotalItems();
     }
 }

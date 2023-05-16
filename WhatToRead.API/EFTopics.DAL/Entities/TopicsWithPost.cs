@@ -1,4 +1,4 @@
-﻿using EFTopics.DAL.Entities;
+﻿using EFTopics.BBL.Entities;
 
 namespace EFWhatToRead_DAL.Entities
 {

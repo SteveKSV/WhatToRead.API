@@ -1,15 +1,10 @@
 ﻿using AutoMapper;
-using EFTopics.DAL.Dtos;
-using EFTopics.DAL.Entities;
+using EFTopics.BBL.Entities;
 using EFWhatToRead_BBL.Dtos;
 using EFWhatToRead_BBL.Managers.Interfaces;
 using EFWhatToRead_DAL.Params;
 using EFWhatToRead_DAL.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace EFWhatToRead_BBL.Managers
 {
@@ -67,6 +62,20 @@ namespace EFWhatToRead_BBL.Managers
         {
             var topic = await UnitOfWork.TopicsRepository.GetTopicByIdWithPosts(topicId);
             return Mapper.Map<TopicsWithPostsDto>(topic);
+        }
+
+        public async Task<int> GetTotalItems()
+        {
+            try
+            {
+                int count = await UnitOfWork.TopicsRepository.GetTotalItems();
+                return count;
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions or logging as needed
+                throw new Exception("Failed to retrieve total item count.", ex);
+            }
         }
     }
 }

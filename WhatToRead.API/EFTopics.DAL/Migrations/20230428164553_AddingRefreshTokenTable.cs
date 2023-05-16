@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace EFTopics.DAL.Migrations
+namespace EFTopics.BBL.Migrations
 {
     /// <inheritdoc />
     public partial class AddingRefreshTokenTable : Migration

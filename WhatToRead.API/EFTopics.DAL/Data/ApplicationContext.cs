@@ -1,11 +1,11 @@
 ﻿using EFWhatToRead_DAL.Data.Configuration;
-using EFTopics.DAL.Entities;
+using EFTopics.BBL.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using EFWhatToRead_DAL.Entities;
 
-namespace EFTopics.DAL.Data
+namespace EFTopics.BBL.Data
 {
     public class ApplicationContext : IdentityDbContext<IdentityUser>
     {

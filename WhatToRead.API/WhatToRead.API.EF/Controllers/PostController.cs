@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using EFTopics.DAL.Data;
-using EFTopics.DAL.Dtos;
-using EFTopics.DAL.Entities;
+using EFTopics.BBL.Data;
+using EFTopics.BBL.Dtos;
+using EFTopics.BBL.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using EFWhatToRead_DAL.Repositories.Interfaces;

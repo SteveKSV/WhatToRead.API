@@ -1,9 +1,15 @@
 ﻿@page "/topics"
 @inject TopicService topicService
 @using BlazorApp.EF.Services;
-@using EFTopics.DAL.Dtos;
+@using EFWhatToRead_BBL.Dtos;
+@using EFWhatToRead_DAL.Params;
+
 
 <h3>Topics</h3>
+
+<!--Search input-->
+<input type="text" @bind="searchText" placeholder="Search topics" @oninput="HandleSearch" />
+
 @if (topics == null)
 {
     <p><em>Loading...</em></p>
@@ -18,7 +24,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var topic in topics)
+            @foreach (var topic in displayedTopics)
             {
                 <tr>
                     <td>@topic.TopicId</td>
@@ -29,12 +35,54 @@ else
     </table>
 }
 
+<Pagination TotalItems="totalItems" PageSize="pageSize" CurrentPage="currentPage" OnPageChange="HandlePageChange" />
 
 @code {
     List<TopicDto> topics;
+    List<TopicDto> displayedTopics;
+    private string? searchText;
+    private int totalItems;
+    private int pageSize = 10;
+    private int currentPage = 1;
 
     protected override async Task OnInitializedAsync()
     {
-        topics = await topicService.GetTopicsAsync();
+        await LoadTopics();
+    }
+
+    private async Task LoadTopics()
+    {
+        // Fetch topics based on current page and page size
+        var pagination = new PageModel
+            {
+                PageNumber = currentPage,
+                PageSize = pageSize
+            };
+
+        topics = await topicService.GetTopicsAsync(pagination);
+
+        // Apply search filter
+        displayedTopics = string.IsNullOrEmpty(searchText)
+            ? topics
+            : topics.Where(t => t.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        totalItems = displayedTopics.Count;
+
+        // Apply pagination
+        displayedTopics = displayedTopics.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+    }
+
+    private async Task HandleSearch(ChangeEventArgs e)
+    {
+        if(e.Value != null)
+        searchText = e.Value.ToString();
+
+        await LoadTopics();
+    }
+
+    private async void HandlePageChange(int newPage)
+    {
+        currentPage = newPage;
+        await LoadTopics();
     }
 }

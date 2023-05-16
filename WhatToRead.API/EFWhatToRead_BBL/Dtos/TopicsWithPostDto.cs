@@ -1,4 +1,4 @@
-﻿using EFTopics.DAL.Dtos;
+﻿using EFTopics.BBL.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;

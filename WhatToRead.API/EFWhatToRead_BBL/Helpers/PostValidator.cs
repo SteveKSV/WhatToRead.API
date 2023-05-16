@@ -1,4 +1,4 @@
-﻿using EFTopics.DAL.Dtos;
+﻿using EFTopics.BBL.Dtos;
 using FluentValidation;
 
 namespace EFWhatToRead_BBL.Helpers

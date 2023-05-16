@@ -1,5 +1,5 @@
-﻿using EFTopics.DAL.Data;
-using EFTopics.DAL.Entities;
+﻿using EFTopics.BBL.Data;
+using EFTopics.BBL.Entities;
 using EFWhatToRead_DAL.Entities;
 using EFWhatToRead_DAL.Repositories.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;

@@ -1,4 +1,4 @@
-﻿using EFTopics.DAL.Entities;
+﻿using EFTopics.BBL.Entities;
 using EFWhatToRead_DAL.Seeding;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EFTopics.DAL.Seeding
+namespace EFTopics.BBL.Seeding
 {
     public class PostSeeder : ISeeder<Post>
     {

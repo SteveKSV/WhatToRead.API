@@ -1,11 +1,11 @@
-using EFTopics.DAL.Data;
+using EFTopics.BBL.Data;
 using Microsoft.EntityFrameworkCore;
 using EFWhatToRead_DAL.Repositories;
 using EFWhatToRead_DAL.Repositories.Interfaces.Repositories;
 using EFWhatToRead_DAL.Repositories.Interfaces;
 using EFWhatToRead_BBL.Managers.Interfaces;
 using EFWhatToRead_BBL.Managers;
-using EFTopics.DAL.Dtos;
+using EFTopics.BBL.Dtos;
 using EFWhatToRead_BBL.Helpers;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;

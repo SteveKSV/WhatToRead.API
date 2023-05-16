@@ -1,4 +1,4 @@
-﻿using EFTopics.DAL.Entities;
+﻿using EFTopics.BBL.Entities;
 using EFWhatToRead_DAL.Entities;
 
 namespace EFWhatToRead_DAL.Repositories.Interfaces.Repositories
@@ -7,5 +7,7 @@ namespace EFWhatToRead_DAL.Repositories.Interfaces.Repositories
     {
         Task<List<TopicsWithPost>> GetAllTopicsWithPosts();
         Task<TopicsWithPost?> GetTopicByIdWithPosts(int topicId);
+
+        Task<int> GetTotalItems();
     }
 }

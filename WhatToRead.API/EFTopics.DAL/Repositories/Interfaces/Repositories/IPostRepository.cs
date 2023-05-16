@@ -1,4 +1,4 @@
-﻿using EFTopics.DAL.Entities;
+﻿using EFTopics.BBL.Entities;
 using EFWhatToRead_DAL.Entities;
 using System;
 using System.Collections.Generic;

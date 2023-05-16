@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EFTopics.DAL.Entities;
-using EFTopics.DAL.Seeding;
+using EFTopics.BBL.Entities;
+using EFTopics.BBL.Seeding;
 
 namespace EFWhatToRead_DAL.Data.Configuration
 {

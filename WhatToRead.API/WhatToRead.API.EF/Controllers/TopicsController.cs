@@ -1,12 +1,9 @@
-﻿using EFTopics.DAL.Entities;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
-using EFTopics.DAL.Data;
-using EFWhatToRead_DAL.Repositories.Interfaces;
+using EFTopics.BBL.Data;
 using EFWhatToRead_BBL.Managers.Interfaces;
-using EFTopics.DAL.Dtos;
 using EFWhatToRead_DAL.Params;
-using Microsoft.Extensions.Hosting;
+using EFWhatToRead_BBL.Dtos;
 
 namespace WhatToRead.API.EF.Controllers
 {
@@ -87,6 +84,24 @@ namespace WhatToRead.API.EF.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for getting count of all topics
+        /// </summary>
+        /// <returns>Total topics in integer format</returns>
+        [HttpGet("Count")]
+        public async Task<IActionResult> GetTotalItems()
+        {
+            try
+            {
+                var count = await TopicManager.GetTotalItems();
+                return Ok(count);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to retrieve total item count: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
+            }
+        }
 
         /// <summary>
         /// Returns topic by id async.

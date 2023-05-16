@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EFTopics.DAL.Exceptions
+namespace EFTopics.BBL.Exceptions
 {
     public class EntityNotFoundException : Exception
     {

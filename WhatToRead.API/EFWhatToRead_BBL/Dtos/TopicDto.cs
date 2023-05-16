@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EFTopics.DAL.Dtos
+namespace EFWhatToRead_BBL.Dtos
 {
     public class TopicDto
     {

@@ -1,10 +1,10 @@
-﻿using EFTopics.DAL.Entities;
+﻿using EFTopics.BBL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EFTopics.DAL.Data;
+using EFTopics.BBL.Data;
 using EFWhatToRead_DAL.Repositories.Interfaces.Repositories;
 using EFWhatToRead_DAL.Repositories.Interfaces;
 

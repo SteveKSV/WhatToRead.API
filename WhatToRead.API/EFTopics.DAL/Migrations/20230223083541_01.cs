@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace EFTopics.DAL.Migrations
+namespace EFTopics.BBL.Migrations
 {
     /// <inheritdoc />
     public partial class _01 : Migration

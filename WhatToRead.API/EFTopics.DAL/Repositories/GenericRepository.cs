@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using EFTopics.DAL.Data;
-using EFTopics.DAL.Exceptions;
+using EFTopics.BBL.Data;
+using EFTopics.BBL.Exceptions;
 using EFWhatToRead_DAL.Repositories.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 

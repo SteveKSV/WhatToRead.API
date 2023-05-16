@@ -1,4 +1,4 @@
-﻿using EFTopics.DAL.Dtos;
+﻿using EFTopics.BBL.Dtos;
 using EFWhatToRead_BBL.Dtos;
 using EFWhatToRead_DAL.Params;
 

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using EFTopics.DAL.Dtos;
-using EFTopics.DAL.Entities;
+using EFTopics.BBL.Dtos;
+using EFTopics.BBL.Entities;
 using EFWhatToRead_BBL.Dtos;
 using EFWhatToRead_BBL.Managers.Interfaces;
 using EFWhatToRead_DAL.Params;

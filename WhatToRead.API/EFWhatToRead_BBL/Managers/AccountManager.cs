@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Azure.Core;
-using EFTopics.DAL.Data;
+using EFTopics.BBL.Data;
 using EFWhatToRead_BBL.Dtos;
 using EFWhatToRead_BBL.Managers.Interfaces;
 using EFWhatToRead_BBL.Models;

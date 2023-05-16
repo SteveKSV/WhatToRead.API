@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using EFWhatToRead_BBL.Models;
-using EFTopics.DAL.Data;
+using EFTopics.BBL.Data;
 
 namespace WhatToRead.API.EF.Controllers
 {

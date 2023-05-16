@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WhatToRead_EF", "WhatToRead
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WhatToRead.API.AdoNet.BBL", "WhatToRead.API.AdoNet.BBL\WhatToRead.API.AdoNet.BBL.csproj", "{70BC4DFC-30C7-48DF-AB49-4747F24AEA66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp.EF", "BlazorApp.EF\BlazorApp.EF.csproj", "{AF51D06E-138F-4B96-B277-152BB9880193}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApp.EF", "BlazorApp.EF\BlazorApp.EF.csproj", "{AF51D06E-138F-4B96-B277-152BB9880193}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
