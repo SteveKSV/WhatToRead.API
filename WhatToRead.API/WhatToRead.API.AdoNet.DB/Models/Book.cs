@@ -13,6 +13,7 @@ namespace WhatToRead.Core.Models
         public int Language_Id { get; set; }
         public int NumberOfPages { get; set; }
         public DateTime Publication_Date { get; set; }
-        public int Publisher_Id { get; set;}
+        public int Publisher_Id { get; set; }
+        public int Author_Id { get; set; }
     }
 }

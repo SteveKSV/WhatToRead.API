@@ -1,0 +1,108 @@
+﻿@page "/books"
+@inject BookService bookService
+@inject NavigationManager navManager
+@using BlazorApp.EF.Services;
+@using WhatToRead.API.AdoNet.BBL.Dtos;
+@using System.Linq;
+<h3>Books</h3>
+
+<!--Search input-->
+<input type="text" @bind="searchText" placeholder="Search books" @oninput="HandleSearch" />
+
+@if (books == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <h4>Total books: @totalItems</h4>
+    <a class="btn btn-dark" href="create">Create</a>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title of the book</th>
+                <th>Author's name</th>
+                <th>Number of pages</th>
+                <th>Publication date</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var book in displayedBooks)
+            {
+                <tr>
+                    <td>@book.Title</td>
+                    <td>@book.Author_Name</td>
+                    <td>@book.NumberOfPages</td>
+                    <td>@book.Publication_Date.ToShortDateString()</td>
+                    <td>
+                        <form onsubmit="@(() => HandleEdit(book.Id))">
+                            <input type="hidden" value="@book.Id" />
+                            <button type="submit" class="btn btn-secondary">Edit</button>
+                        </form>
+                        <form onsubmit="@(() => HandleDelete(book.Id))">
+                            <input type="hidden" value="@book.Id" />
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    IEnumerable<BookByAuthorDTO> books;
+    List<BookByAuthorDTO> Books;
+    List<BookByAuthorDTO> displayedBooks;
+    private string? searchText;
+    public int totalItems;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadBooks();
+    }
+
+    private async Task LoadBooks()
+    {
+        books = await bookService.GetAllBooksAsync();
+        Books = books.ToList();
+
+        // Apply search filter
+        displayedBooks = string.IsNullOrEmpty(searchText)
+            ? Books
+            : Books.Where(t => t.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        totalItems = displayedBooks.Count;
+    }
+
+    private async Task HandleSearch(ChangeEventArgs e)
+    {
+        if (e.Value != null)
+            searchText = e.Value.ToString();
+
+        await LoadBooks();
+    }
+
+    private void HandleEdit(int bookId)
+    {
+        // Redirect to the edit page passing the bookId
+        navManager.NavigateTo($"edit/{bookId}");
+    }
+
+    private async Task HandleDelete(int bookId)
+    {
+        // Call the delete method in the book service passing the bookId
+        await bookService.DeleteBookAsync(bookId);
+
+        // Remove the deleted book from the displayedBooks list
+        var deletedBook = displayedBooks.FirstOrDefault(b => b.Id == bookId);
+        if (deletedBook != null)
+            displayedBooks.Remove(deletedBook);
+
+        totalItems = displayedBooks.Count;
+
+        // Reload the current page
+        navManager.NavigateTo(navManager.Uri, forceLoad: true);
+    }
+}

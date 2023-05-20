@@ -103,6 +103,45 @@ namespace WhatToRead.API.Controllers
         }
 
         /// <summary>
+        /// Returns all books with author.
+        /// </summary>
+        /// <returns>All books with author name</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     Get /api/book/GetBooksWithAuthor
+        ///
+        /// </remarks>
+        /// <response code="200">Returns all books with author's name</response>
+        /// <response code="400">There aren't any books</response>
+        [Route("GetBooksWithAuthor")]
+        [HttpGet]
+
+        public async Task<ActionResult> GetBooksWithAuthor()
+        {
+            try
+            {
+                var result = await _bookManager.GetAllBooksWithAuthor();
+                if (result == null)
+                {
+                    _logger.LogInformation($"There aren't any books with author");
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogInformation($"All books is received successfully!");
+                    return Ok(result);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Транзакція сфейлилась! Щось пішло не так у методі GetBookByAuthorId() - {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "вот так вот!");
+            }
+        }
+
+        /// <summary>
         /// Returns a book by author's id.
         /// </summary>
         /// <param name="id">The id of author</param>

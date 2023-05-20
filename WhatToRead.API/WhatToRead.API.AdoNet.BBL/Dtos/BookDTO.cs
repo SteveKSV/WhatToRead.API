@@ -14,5 +14,6 @@ namespace WhatToRead.API.AdoNet.BBL.Dtos
         public int NumberOfPages { get; set; }
         public DateTime Publication_Date { get; set; }
         public int Publisher_Id { get; set; }
+        public int Author_Id { get; set; }
     }
 }

@@ -11,8 +11,13 @@ builder.Services.AddServerSideBlazor();
 
 builder.Services.AddHttpClient<TopicService>(client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApiUrl"));
+    client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApiEF"));
 });
+builder.Services.AddHttpClient<BookService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApiADO"));
+});
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 

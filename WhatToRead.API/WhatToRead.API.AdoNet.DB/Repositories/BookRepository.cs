@@ -60,5 +60,14 @@ namespace WhatToRead.Infrastructure.Repositories
             return result;
         }
 
+        public async Task<IEnumerable<BookByAuthor>> GetBookWithAuthor()
+        {
+            var result = await _sqlConnection.QueryAsync<BookByAuthor>("[CatalogSchema].[GetAllBooksWithAuthor]", commandType: CommandType.StoredProcedure, transaction: _dbTransaction);
+
+            if (result == null)
+                throw new KeyNotFoundException($"There aren't any books with authors");
+
+            return result;
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace WhatToRead.API.AdoNet.DB.Repositories.Interfaces
         Task<IEnumerable<BookByAuthor>> GetBookByAuthorId(int id);
         Task<IEnumerable<BookByPublisher>> GetBookByPublisherId(int id);
         Task<IEnumerable<BooksWithPublisher>> GetAllBooksWithPublisherName();
-
+        Task<IEnumerable<BookByAuthor>> GetBookWithAuthor();
         Task<IEnumerable<Book>> GetBooksByDateUp(DateTime date);
     }
 }

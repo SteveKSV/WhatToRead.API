@@ -1,0 +1,79 @@
+﻿@page "/create"
+@using BlazorApp.EF.Models;
+@using BlazorApp.EF.Services;
+@inject BookService bookService
+@inject NavigationManager navManager
+<h3>BookCreate</h3>
+
+<div class="row">
+    <div class="col-md-4">
+        <EditForm Model="@book" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="text-danger"></div>
+            <div class="form-group">
+                <input type="hidden" @bind="book.Id" />
+            </div>
+            <div class="form-group">
+                <label for="Title" class="control-label">Title</label>
+                <InputText id="Title" @bind-Value="book.Title" class="form-control" />
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="Language" class="control-label">Language id</label>
+                <InputNumber id="Language" @bind-Value="book.Language_Id" class="form-control" />
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="NumberOfPages" class="control-label">Number of pages</label>
+                <InputNumber id="NumberOfPages" @bind-Value="book.NumberOfPages" class="form-control" />
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="Publication_Date" class="control-label">Publication Date</label>
+                <InputDate id="Publication_Date" @bind-Value="book.Publication_Date" class="form-control" />
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="Publisher" class="control-label">Publisher Id</label>
+                <InputNumber id="Publisher" @bind-Value="book.Publisher_Id" class="form-control" />
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="Author" class="control-label">Author Id</label>
+                <InputNumber id="Author" @bind-Value="book.Author_Id" class="form-control" />
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <button type="submit" value="Create" class="btn btn-primary">Create</button>
+            </div>
+            
+        </EditForm>
+        <br />
+       <button type="button" class="btn btn-danger" @onclick="OnCancelHandler">Cancel</button>
+        @if (isSend)
+        {
+            <h5>@FormSubmitMessage</h5>
+        }
+    </div>
+</div>
+
+@code {
+    public Book book = new Book();
+    public string FormSubmitMessage { get; set; } = "Form Data Not Submitted";
+    public bool isSend = false;
+    public async Task HandleValidSubmit()
+    {
+        await bookService.CreateBookAsync(book);
+        FormSubmitMessage = "Form Data Submitted";
+        isSend = true;
+        navManager.NavigateTo("/books");
+    }
+
+    public void HandleInvalidSubmit() => FormSubmitMessage = "Invalid Data Submitted";
+
+    private void OnCancelHandler()
+    {
+        navManager.NavigateTo("/books");
+    }
+}

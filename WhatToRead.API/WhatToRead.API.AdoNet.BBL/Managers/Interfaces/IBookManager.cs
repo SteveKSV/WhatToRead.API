@@ -15,6 +15,6 @@ namespace WhatToRead.API.AdoNet.BBL.Managers.Interfaces
         Task<IEnumerable<BookByPublisher>> GetBookByPublisherId(int id);
         Task<IEnumerable<BooksWithPublisher>> GetAllBooksWithPublisherName();
         Task<IEnumerable<Book>> GetBooksByDateUp(DateTime date);
-
+        Task<IEnumerable<BookByAuthorDTO>> GetAllBooksWithAuthor();
     }
 }

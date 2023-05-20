@@ -8,6 +8,7 @@ namespace WhatToRead.API.AdoNet.DB.Models.DTO
 {
     public class BookByAuthor
     {
+        public int Id { get; set; }
         public string Title { get; set; }
         public int NumberOfPages { get; set; }
         public DateTime Publication_Date { get; set; }

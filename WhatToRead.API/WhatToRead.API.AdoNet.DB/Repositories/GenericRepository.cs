@@ -9,6 +9,9 @@ using WhatToRead.API.AdoNet.DB.Repositories.Interfaces;
 using System.ComponentModel;
 using System.Reflection;
 using Dapper;
+using WhatToRead.API.AdoNet.DB.Models.DTO;
+using WhatToRead.Core.Models;
+using WhatToRead.API.AdoNet.DAL.Models;
 
 namespace WhatToRead.API.AdoNet.DB.Repositories
 {
@@ -67,7 +70,7 @@ namespace WhatToRead.API.AdoNet.DB.Repositories
                 transaction: _dbTransaction);
         }
 
-     
+
         private IEnumerable<PropertyInfo> GetProperties => typeof(T).GetProperties();
         private static List<string> GenerateListOfProperties(IEnumerable<PropertyInfo> listOfProperties)
         {
@@ -77,7 +80,7 @@ namespace WhatToRead.API.AdoNet.DB.Repositories
                     select prop.Name).ToList();
         }
 
-       
+
         private string GenerateUpdateQuery()
         {
             var updateQuery = new StringBuilder($"UPDATE {_tableName} SET ");
@@ -89,19 +92,19 @@ namespace WhatToRead.API.AdoNet.DB.Repositories
                     updateQuery.Append($"{property}=@{property},");
                 }
             });
-            updateQuery.Remove(updateQuery.Length - 1, 1); 
+            updateQuery.Remove(updateQuery.Length - 1, 1);
             updateQuery.Append(" WHERE Id=@Id");
             return updateQuery.ToString();
         }
-    
+
         private string GenerateInsertQuery()
         {
             var insertQuery = new StringBuilder($"INSERT INTO {_tableName} ");
             insertQuery.Append("(");
             var properties = GenerateListOfProperties(GetProperties);
- 
+
             properties.Remove("Id");
-            
+
             properties.ForEach(prop => { insertQuery.Append($"[{prop}],"); });
             insertQuery
                 .Remove(insertQuery.Length - 1, 1)

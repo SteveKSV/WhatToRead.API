@@ -87,5 +87,12 @@ namespace WhatToRead.API.AdoNet.BBL.Managers
         {
             await UnitOfWork.Books.UpdateAsync(Mapper.Map<BookDTO, Book>(entity));
         }
+
+        public async Task<IEnumerable<BookByAuthorDTO>> GetAllBooksWithAuthor()
+        {
+            var response = await UnitOfWork.Books.GetBookWithAuthor();
+            UnitOfWork.Commit();
+            return Mapper.Map<IEnumerable<BookByAuthorDTO>>(response);
+        }
     }
 }
