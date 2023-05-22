@@ -16,7 +16,7 @@
 else
 {
     <h4>Total books: @totalItems</h4>
-    <a class="btn btn-dark" href="create">Create</a>
+    <a class="btn btn-dark" href="createBook">Create</a>
 
     <table class="table">
         <thead>
@@ -87,7 +87,7 @@ else
     private void HandleEdit(int bookId)
     {
         // Redirect to the edit page passing the bookId
-        navManager.NavigateTo($"edit/{bookId}");
+        navManager.NavigateTo($"editBook/{bookId}");
     }
 
     private async Task HandleDelete(int bookId)

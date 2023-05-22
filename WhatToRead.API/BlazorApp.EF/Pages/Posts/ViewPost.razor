@@ -1,0 +1,130 @@
+﻿@page "/posts"
+@inject PostService postService
+@inject NavigationManager navManager
+@using BlazorApp.EF.Services;
+@using System.Linq;
+@using BlazorApp.EF.Models;
+@using EFTopics.BBL.Dtos;
+@using EFWhatToRead_DAL.Params;
+<h3>Posts</h3>
+
+<!--Search input-->
+<input type="text" @bind="searchText" placeholder="Search books" @oninput="HandleSearch" />
+
+@if (posts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <h4>Total posts: @totalItems</h4>
+    <a class="btn btn-dark" href="createPost">Create</a>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title of the post</th>
+                <th>Slug</th>
+                <th>Views</th>
+                <th>Body</th>
+                <th>Created</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var post in displayedPosts)
+            {
+                <tr>
+                    <td>@post.Title</td>
+                    <td>@post.Slug</td>
+                    <td>@post.Views</td>
+                    <td>@post.Body</td>
+                    <td>@post.Created_At</td>
+                    @*<td>
+                        <form onsubmit="@(() => HandleEdit(post.PostId))">
+                            <input type="hidden" value="@post.PostId" />
+                            <button type="submit" class="btn btn-secondary">Edit</button>
+                        </form>
+                        <form onsubmit="@(() => HandleDelete(post.PostId))">
+                            <input type="hidden" value="@post.PostId" />
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>*@
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <Pagination TotalItems="totalItems" PageSize="pageSize" CurrentPage="currentPage" OnPageChange="HandlePageChange" />
+}
+@code {
+    List<PostDto> posts;
+    List<PostDto> displayedPosts;
+    private string? searchText;
+    private int totalItems;
+    private int pageSize = 10;
+    private int currentPage = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPosts();
+    }
+
+    private async Task LoadPosts()
+    {
+        // Fetch topics based on current page and page size
+        var pagination = new PageModel
+            {
+                PageNumber = currentPage,
+                PageSize = pageSize
+            };
+
+        posts = await postService.GetPostsAsync(pagination);
+
+        // Apply search filter
+        displayedPosts = string.IsNullOrEmpty(searchText)
+            ? posts
+            : posts.Where(t => t.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        totalItems = displayedPosts.Count;
+
+        // Apply pagination
+        displayedPosts = displayedPosts.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+    }
+
+    private async Task HandleSearch(ChangeEventArgs e)
+    {
+        if (e.Value != null)
+            searchText = e.Value.ToString();
+
+        await LoadPosts();
+    }
+
+    private async void HandlePageChange(int newPage)
+    {
+        currentPage = newPage;
+        await LoadPosts();
+    }
+
+    //private void HandleEdit(int postId)
+    //{
+    //    // Redirect to the edit page passing the bookId
+    //    navManager.NavigateTo($"editPost/{postId}");
+    //}
+
+    //private async Task HandleDelete(int postId)
+    //{
+    //    // Call the delete method in the book service passing the bookId
+    //    await postService.DeletePostAsync(postId);
+
+    //    // Remove the deleted book from the displayedBooks list
+    //    var deletedPost = displayedPosts.FirstOrDefault(b => b.PostId == postId);
+    //    if (deletedPost != null)
+    //        displayedPosts.Remove(deletedPost);
+
+    //    totalItems = displayedPosts.Count;
+
+    //    // Reload the current page
+    //    navManager.NavigateTo(navManager.Uri, forceLoad: true);
+    //}
+}

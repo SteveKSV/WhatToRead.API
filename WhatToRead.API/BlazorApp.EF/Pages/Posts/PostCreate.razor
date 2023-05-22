@@ -1,0 +1,87 @@
+﻿@page "/createPost"
+@using BlazorApp.EF.Helpers;
+@using BlazorApp.EF.Models
+@using BlazorApp.EF.Services
+@using FluentValidation
+@using FluentValidation.AspNetCore
+@inject PostService postService
+@inject NavigationManager navManager
+@inject PostValidator postValidator
+<h3>PostCreate</h3>
+
+<div class="row">
+    <div class="col-md-4">
+        <EditForm Model="@post" OnValidSubmit="HandleValidSubmit">
+            <FluentValidationValidator Validator="postValidator" />
+            <div class="text-danger"></div>
+            <div class="form-group">
+                <input type="hidden" @bind="post.PostId" />
+            </div>
+            <div class="form-group">
+                <label for="Title" class="control-label">Title</label>
+                <InputText id="Title" @bind-Value="post.Title" class="form-control" />
+                <ValidationMessage For="@(() => post.Title)" />
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="Body" class="control-label">Body</label>
+                <InputText id="Body" @bind-Value="post.Body" class="form-control" />
+                <ValidationMessage For="@(() => post.Body)" />
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="Slug" class="control-label">Slug</label>
+                <InputText id="Slug" @bind-Value="post.Slug" class="form-control" />
+                <ValidationMessage For="@(() => post.Slug)" />
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="Views" class="control-label">Views</label>
+                <InputNumber id="Views" @bind-Value="post.Views" class="form-control" />
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="Published" class="control-label">Published</label>
+                <InputCheckbox id="Published" @bind-Value="post.Published" class="form-control" />
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="Created_At" class="control-label">Publication Date</label>
+                <InputDate id="Created_At" @bind-Value="post.Created_At" class="form-control" />
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <button type="submit" value="Create" class="btn btn-primary">Create</button>
+            </div>
+
+        </EditForm>
+        <br />
+        <button type="button" class="btn btn-danger" @onclick="OnCancelHandler">Cancel</button>
+        @if (isSend)
+        {
+            <h5>@FormSubmitMessage</h5>
+        }
+    </div>
+</div>
+
+@code {
+    public Post post = new Post();
+    public string FormSubmitMessage { get; set; } = "Form Data Not Submitted";
+    public bool isSend = false;
+    public async Task HandleValidSubmit()
+    {
+        var validationResult = await postValidator.ValidateAsync(post);
+        if (validationResult.IsValid)
+        {
+            await postService.CreatePostAsync(post);
+            FormSubmitMessage = "Form Data Submitted";
+            isSend = true;
+            navManager.NavigateTo("/posts");
+        }
+    }
+
+    private void OnCancelHandler()
+    {
+        navManager.NavigateTo("/posts");
+    }
+}

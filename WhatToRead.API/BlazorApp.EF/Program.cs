@@ -1,15 +1,21 @@
+using BlazorApp.EF.Helpers;
+using BlazorApp.EF.Models;
 using BlazorApp.EF.Services;
-using Microsoft.Extensions.DependencyInjection;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-
+builder.Services.AddSingleton<PostValidator>();
 //builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApiUrl")) });
 
 builder.Services.AddHttpClient<TopicService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApiEF"));
+});
+builder.Services.AddHttpClient<PostService>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApiEF"));
 });
