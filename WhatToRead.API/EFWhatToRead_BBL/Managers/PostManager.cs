@@ -61,5 +61,11 @@ namespace EFWhatToRead_BBL.Managers
             var entity = await UnitOfWork.PostRepository.GetPostByIdWithTopics(postId);
             return Mapper.Map<PostWithTopicsDto>(entity);
         }
+
+        public async Task<int> GetTotalPostCountAsync()
+        {
+            var count = await UnitOfWork.PostRepository.GetTotalPostCountAsync();
+            return count;
+        }
     }
 }

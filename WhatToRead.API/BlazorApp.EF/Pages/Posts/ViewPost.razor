@@ -11,7 +11,7 @@
 <!--Search input-->
 <input type="text" @bind="searchText" placeholder="Search books" @oninput="HandleSearch" />
 
-@if (posts == null)
+@if (displayedPosts == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -58,7 +58,6 @@ else
     <Pagination TotalItems="totalItems" PageSize="pageSize" CurrentPage="currentPage" OnPageChange="HandlePageChange" />
 }
 @code {
-    List<PostDto> posts;
     List<PostDto> displayedPosts;
     private string? searchText;
     private int totalItems;
@@ -72,25 +71,25 @@ else
 
     private async Task LoadPosts()
     {
-        // Fetch topics based on current page and page size
+        // Fetch paginated posts
         var pagination = new PageModel
             {
                 PageNumber = currentPage,
                 PageSize = pageSize
             };
+        displayedPosts = await postService.GetPostsAsync(pagination);
 
-        posts = await postService.GetPostsAsync(pagination);
+        // Apply search filter to the displayed posts
+        if (!string.IsNullOrEmpty(searchText))
+        {
+            displayedPosts = displayedPosts
+                .Where(t => t.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
 
-        // Apply search filter
-        displayedPosts = string.IsNullOrEmpty(searchText)
-            ? posts
-            : posts.Where(t => t.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase)).ToList();
-
-        totalItems = displayedPosts.Count;
-
-        // Apply pagination
-        displayedPosts = displayedPosts.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+        totalItems = await postService.GetTotalPostCountAsync();
     }
+
 
     private async Task HandleSearch(ChangeEventArgs e)
     {

@@ -12,5 +12,6 @@ namespace EFWhatToRead_DAL.Repositories.Interfaces.Repositories
     {
         Task<List<PostWithTopics>> GetAllPostsWithTopics();
         Task<PostWithTopics?> GetPostByIdWithTopics(int postId);
+        Task<int> GetTotalPostCountAsync();
     }
 }

@@ -122,7 +122,7 @@ namespace EFWhatToRead_BBL.Managers
                     issuer: _jwtSettings.Issuer,
                     audience: _jwtSettings.Audience,
                     claims: claims,
-                    expires: DateTime.UtcNow.AddMinutes(1),
+                    expires: DateTime.UtcNow.AddMinutes(2),
                     notBefore: DateTime.UtcNow,
                     signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
             );

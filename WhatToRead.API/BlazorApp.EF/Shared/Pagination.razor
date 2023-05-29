@@ -10,12 +10,30 @@
         bool isCurrentPage = currentPage == CurrentPage;
         string activeClass = isCurrentPage ? "active" : "";
 
-        <button class="pagination-btn @activeClass" @onclick="(() => GoToPage(currentPage))">@currentPage</button>
+        <button class="pagination-btn @activeClass" @onclick="(() => GoToPage(i))">@i</button>
     }
 
     <button class="pagination-btn" disabled="@IsLastPage" @onclick="NextPage">&gt;</button>
     <button class="pagination-btn" disabled="@IsLastPage" @onclick="GoToLastPage">&gt;&gt;</button>
 </div>
+
+<style>
+    .pagination-btn {
+        padding: 8px;
+        margin: 4px;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        color: #000;
+        cursor: pointer;
+    }
+
+        .pagination-btn.active {
+            background-color: #ccc;
+            color: #fff;
+        }
+
+</style>
+
 
 @code {
     [Parameter]

@@ -23,31 +23,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 // Swagger
-var securityScheme = new OpenApiSecurityScheme()
-{
-    Name = "Authorization",
-    Type = SecuritySchemeType.ApiKey,
-    Scheme = "Bearer",
-    BearerFormat = "JWT",
-    In = ParameterLocation.Header,
-    Description = "JSON Web Token based security",
-};
-
-var securityReq = new OpenApiSecurityRequirement()
-{
-    {
-        new OpenApiSecurityScheme
-        {
-            Reference = new OpenApiReference
-            {
-                Type = ReferenceType.SecurityScheme,
-                Id = "Bearer"
-            }
-        },
-        new string[] {}
-    }
-};
-
 var contact = new OpenApiContact()
 {
     Name = "Stepan Klem",

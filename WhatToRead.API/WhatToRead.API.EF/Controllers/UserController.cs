@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using EFWhatToRead_BBL.Models;
 using EFTopics.BBL.Data;
+using EFTopics.BBL.Entities;
 
 namespace WhatToRead.API.EF.Controllers
 {
@@ -44,9 +45,13 @@ namespace WhatToRead.API.EF.Controllers
         /// <summary>
         /// Method for getting a list of all users that are registered. Only for admin to use.
         /// </summary>
-        /// <returns>List of users</returns>
+        /// <response code="200">Returns a list of users</response>
+        /// <response code="401">Unauthorized - the client provides no credentials or invalid credentials</response>
+        /// <response code="403">Forbidden - the client provides valid credentials, but has not enough privileges</response>
         [HttpGet("users")]
         [Authorize(Policy = "OnlyAdmin")]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<IdentityUser>))]
+        [ProducesResponseType(401)]
         public async Task<IActionResult> GetUsers()
         {
             var users = await _userManager.Users.ToListAsync();
@@ -58,6 +63,9 @@ namespace WhatToRead.API.EF.Controllers
         /// </summary>
         /// <param name="userId">User id</param>
         /// <returns>A user</returns>
+        /// /// <response code="200">Returns a user by id</response>
+        /// <response code="401">Unauthorized - the client provides no credentials or invalid credentials</response>
+        /// <response code="403">Forbidden - the client provides valid credentials, but has not enough privileges</response>
         [HttpGet("users/{userId}")]
         [Authorize(Policy = "OnlyAdmin")]
         public async Task<IActionResult> GetUser(string userId)
@@ -76,6 +84,9 @@ namespace WhatToRead.API.EF.Controllers
         /// </summary>
         /// <param name="userId">User id</param>
         /// <returns>Status Code</returns>
+        /// <response code="200">A user is successfully deleted</response>
+        /// <response code="401">Unauthorized - the client provides no credentials or invalid credentials</response>
+        /// <response code="403">Forbidden - the client provides valid credentials, but has not enough privileges</response>
         [HttpDelete("users/{userId}")]
         [Authorize(Policy = "OnlyAdmin")]
         public async Task<IActionResult> DeleteUser(string userId)
@@ -100,6 +111,9 @@ namespace WhatToRead.API.EF.Controllers
         /// </summary>
         /// <param name="model">User paramaters</param>
         /// <returns>User</returns>
+        /// <response code="200">User is created successfully</response>
+        /// <response code="401">Unauthorized - the client provides no credentials or invalid credentials</response>
+        /// <response code="403">Forbidden - the client provides valid credentials, but has not enough privileges</response>
         [HttpPost("users")]
         [Authorize(Policy = "OnlyAdmin")]
         public async Task<IActionResult> CreateUser([FromBody] OtherParamUser model)
@@ -109,10 +123,20 @@ namespace WhatToRead.API.EF.Controllers
                 var user = new IdentityUser { UserName = model.UserName, Email = model.Email };
 
                 var result = await _userManager.CreateAsync(user, model.Password);
-                
+
                 if (result.Succeeded)
                 {
-                    return Ok(user);
+                    // Adding role to user
+                    var roleResult = await _userManager.AddToRoleAsync(user, model.RoleUser.ToString());
+
+                    if (roleResult.Succeeded)
+                    {
+                        return Ok(user);
+                    }
+                    else
+                    {
+                        return BadRequest(roleResult.Errors);
+                    }
                 }
                 else
                 {

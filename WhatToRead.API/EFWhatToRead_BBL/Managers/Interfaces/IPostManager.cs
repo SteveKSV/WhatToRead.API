@@ -13,5 +13,7 @@ namespace EFWhatToRead_BBL.Managers.Interfaces
         Task<bool> DeletePostById(int postId);
         Task<List<PostWithTopicsDto>> GetAllPostsWithTopics();
         Task<PostWithTopicsDto?> GetPostByIdWithTopics(int postId);
+
+        Task<int> GetTotalPostCountAsync();
     }
 }

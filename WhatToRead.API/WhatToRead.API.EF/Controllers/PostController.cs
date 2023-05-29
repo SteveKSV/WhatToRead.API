@@ -1,18 +1,10 @@
-﻿using AutoMapper;
-using EFTopics.BBL.Data;
+﻿using EFTopics.BBL.Data;
 using EFTopics.BBL.Dtos;
 using EFTopics.BBL.Entities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using EFWhatToRead_DAL.Repositories.Interfaces;
 using EFWhatToRead_BBL.Managers.Interfaces;
-using EFWhatToRead_BBL.Managers;
 using EFWhatToRead_DAL.Params;
-using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 using FluentValidation;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Authorization;
 
 namespace WhatToRead.API.EF.Controllers
 {
@@ -40,6 +32,25 @@ namespace WhatToRead.API.EF.Controllers
             _validator = validator;
         }
 
+        /// <summary>
+        /// Returns a total posts count.
+        /// </summary>
+        /// <returns>Returns a total posts count</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     Get /api/post
+        ///
+        /// </remarks>
+        /// <response code="200">Returns a total posts count</response>
+        /// <response code="400"></response>
+
+        [HttpGet("GetTotalPostCount")]
+        public async Task<IActionResult> GetTotalPostCount()
+        {
+            var count = await PostManager.GetTotalPostCountAsync();
+            return Ok(count);
+        }
         /// <summary>
         /// Returns all posts async.
         /// </summary>
@@ -73,7 +84,7 @@ namespace WhatToRead.API.EF.Controllers
                     var endDate = dateModel.EndDate;
 
                     if (startDate.ToString() != "01.01.0001 0:00:00")
-                    posts = posts.Where(p => p.Created_At >= startDate);
+                        posts = posts.Where(p => p.Created_At >= startDate);
 
                     if (endDate.ToString() != "01.01.0001 0:00:00")
                     {
@@ -190,7 +201,8 @@ namespace WhatToRead.API.EF.Controllers
                 }
 
                 return Ok("Успішно доданий новий post!");
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 _logger.LogError($"Транзакція сфейлилась! Щось пішло не так у методі Insert - {ex.Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, "вот так вот!");

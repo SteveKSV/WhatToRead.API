@@ -72,5 +72,11 @@ namespace EFWhatToRead_DAL.Repositories
 
             return result;
         }
+
+        public async Task<int> GetTotalPostCountAsync()
+        {
+            var posts = await _dbContext.Posts.ToListAsync();
+            return posts.Count();
+        }
     }
 }

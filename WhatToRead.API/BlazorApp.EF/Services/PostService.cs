@@ -36,5 +36,13 @@ namespace BlazorApp.EF.Services
             var url = _httpClient.BaseAddress;
             await _httpClient.PostAsync($"{url}/Post", postToSend);
         }
+
+        public async Task<int> GetTotalPostCountAsync()
+        {
+            var url = _httpClient.BaseAddress;
+            var response = await _httpClient.GetAsync($"{url}/Post/GetTotalPostCount");
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Int32>(json);
+        }
     }
 }
