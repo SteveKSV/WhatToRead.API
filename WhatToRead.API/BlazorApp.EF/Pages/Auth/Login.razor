@@ -1,0 +1,47 @@
+﻿@page "/login"
+@using BlazorApp.EF.Services;
+@using BlazorApp.EF.Models;
+@inject UserService userService
+@inject NavigationManager navManager
+@inject IJSRuntime jsRuntime
+<h3>Login</h3>
+
+<EditForm Model="@loginModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="form-group">
+        <label>Email</label>
+        <InputText @bind-Value="@loginModel.Email" class="form-control" />
+        <ValidationMessage For="@(() => loginModel.Email)" />
+    </div>
+    <div class="form-group">
+        <label>Password</label>
+        <InputText @bind-Value="@loginModel.Password" class="form-control" />
+        <ValidationMessage For="@(() => loginModel.Password)" />
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Login</button>
+    </div>
+</EditForm>
+
+@code {
+    private TokenRequestModel loginModel = new TokenRequestModel();
+    private bool isSubmitting = false;
+
+    private async Task HandleValidSubmit()
+    {
+        isSubmitting = true;
+        var result = await userService.GetTokenAsync(loginModel);
+        isSubmitting = false;
+
+        // Обробляйте результат входу тут, наприклад, перенаправте на іншу сторінку
+        if (result.IsAuthenticated)
+        {
+            await jsRuntime.InvokeVoidAsync("localStorage.setItem", "User", result.UserName);
+            navManager.NavigateTo("/");
+        }
+        else
+        {
+            // Обробіть випадок, коли аутентифікація не пройшла
+        }
+    }
+}

@@ -24,9 +24,7 @@ namespace BlazorApp.EF.Services
             var url = _httpClient.BaseAddress;
             var response = await _httpClient.GetAsync($"{url}/Book/GetBooksWithAuthor");
             response.EnsureSuccessStatusCode();
-
             var json = await response.Content.ReadAsStringAsync();
-
             return JsonConvert.DeserializeObject<IEnumerable<BookByAuthorDTO>>(json);
         }
 

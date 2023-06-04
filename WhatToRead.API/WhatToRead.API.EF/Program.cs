@@ -15,6 +15,7 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using EFWhatToRead_BBL.Models;
 using System.Reflection;
+using WhatToRead.API.EF.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -128,11 +129,13 @@ builder.Services.AddAuthorization(option =>
 
 // AutoMapper Configuration
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddTransient<IValidator<PostDto>, PostValidator>();
+
+// DI Configurations - Validators
+builder.Services.AddValidators();
+
 // DI Configurations - Business Layer
-builder.Services.AddScoped<ITopicManager, TopicManager>();
-builder.Services.AddScoped<IPostManager, PostManager>();
-builder.Services.AddScoped<IAccountManager, AccountManager>();
+builder.Services.AddManagers();
+
 // DI Configurations - Data Access Layer
 builder.Services.AddScoped<ITopicsRepository, TopicsRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();

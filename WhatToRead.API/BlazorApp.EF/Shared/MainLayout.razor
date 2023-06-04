@@ -1,4 +1,7 @@
-﻿@inherits LayoutComponentBase
+﻿@using BlazorApp.EF.Models;
+@using BlazorApp.EF.Services;
+@inherits LayoutComponentBase
+@inject IJSRuntime jsRuntime
 
 <PageTitle>BlazorApp.EF</PageTitle>
 
@@ -8,7 +11,13 @@
     </div>
 
     <main>
+       
         <div class="top-row px-4">
+            @if (!string.IsNullOrEmpty(Username))
+            {
+                <span>Welcome, @Username!</span>
+
+            }
             <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
         </div>
 
@@ -17,3 +26,21 @@
         </article>
     </main>
 </div>
+
+@code {
+    private string? Username { get; set; } = null;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadUsername();
+        }
+    }
+
+    private async Task LoadUsername()
+    {
+        Username = await jsRuntime.InvokeAsync<string>("localStorage.getItem", "User");
+        StateHasChanged();
+    }
+}
