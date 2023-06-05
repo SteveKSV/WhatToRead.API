@@ -1,8 +1,6 @@
 using BlazorApp.EF;
 using BlazorApp.EF.Helpers;
-using BlazorApp.EF.Models;
-using BlazorApp.EF.Services;
-using FluentValidation;
+using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +14,14 @@ builder.Services.AddSingleton<PostValidator>();
 // Adding Http Client Service
 builder.Services.AddHttpClientServices(builder);
 builder.Services.AddHttpContextAccessor();
+
+// For Authorization and Authentication
+builder.Services.AddOptions();
+builder.Services.AddAuthorizationCore();
+
+builder.Services.AddScoped<AuthenticationStateProvider, TokenAuthenticationStateProvider>();
+//builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
+
 
 // Adding AutoMapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

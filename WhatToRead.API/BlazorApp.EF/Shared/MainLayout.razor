@@ -1,8 +1,9 @@
-﻿@using BlazorApp.EF.Models;
+﻿@using BlazorApp.EF.Helpers;
+@using BlazorApp.EF.Models;
 @using BlazorApp.EF.Services;
 @inherits LayoutComponentBase
-@inject IJSRuntime jsRuntime
-
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager navManager
 <PageTitle>BlazorApp.EF</PageTitle>
 
 <div class="page">
@@ -13,12 +14,15 @@
     <main>
        
         <div class="top-row px-4">
-            @if (!string.IsNullOrEmpty(Username))
-            {
-                <span>Welcome, @Username!</span>
-
-            }
             <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            <AuthorizeView>
+                <Authorized>
+                    <a @onclick="Logout" href="javascript:void(0)">Logout</a>
+                </Authorized>
+                <NotAuthorized>
+                    <a href="/login">Login</a>
+                </NotAuthorized>
+            </AuthorizeView>
         </div>
 
         <article class="content px-4">
@@ -28,19 +32,10 @@
 </div>
 
 @code {
-    private string? Username { get; set; } = null;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private async Task Logout()
     {
-        if (firstRender)
-        {
-            await LoadUsername();
-        }
-    }
-
-    private async Task LoadUsername()
-    {
-        Username = await jsRuntime.InvokeAsync<string>("localStorage.getItem", "User");
-        StateHasChanged();
+        var customAuthStateProvider = (TokenAuthenticationStateProvider)authStateProvider;
+        await customAuthStateProvider.UpdateAuthenticationState(null);
+        navManager.NavigateTo("/", true);
     }
 }

@@ -1,9 +1,12 @@
 ﻿@page "/login"
+@using BlazorApp.EF.Helpers;
 @using BlazorApp.EF.Services;
 @using BlazorApp.EF.Models;
 @inject UserService userService
 @inject NavigationManager navManager
 @inject IJSRuntime jsRuntime
+@inject AuthenticationStateProvider authStateProvider
+
 <h3>Login</h3>
 
 <EditForm Model="@loginModel" OnValidSubmit="HandleValidSubmit">
@@ -18,26 +21,25 @@
         <InputText @bind-Value="@loginModel.Password" class="form-control" />
         <ValidationMessage For="@(() => loginModel.Password)" />
     </div>
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary">Login</button>
+    <div class="my-4">
+        <button type="submit" class="btn btn-primary">Log In</button>
     </div>
 </EditForm>
 
 @code {
     private TokenRequestModel loginModel = new TokenRequestModel();
-    private bool isSubmitting = false;
 
     private async Task HandleValidSubmit()
     {
-        isSubmitting = true;
-        var result = await userService.GetTokenAsync(loginModel);
-        isSubmitting = false;
+        var result = await userService.LoginAsync(loginModel);
 
         // Обробляйте результат входу тут, наприклад, перенаправте на іншу сторінку
         if (result.IsAuthenticated)
         {
-            await jsRuntime.InvokeVoidAsync("localStorage.setItem", "User", result.UserName);
-            navManager.NavigateTo("/");
+            var customAuthStateProvider = (TokenAuthenticationStateProvider)authStateProvider;
+            await customAuthStateProvider.UpdateAuthenticationState(result);
+
+            navManager.NavigateTo("/", true);
         }
         else
         {

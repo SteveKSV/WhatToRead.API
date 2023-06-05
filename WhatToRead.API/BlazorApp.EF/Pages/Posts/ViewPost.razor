@@ -88,6 +88,9 @@ else
         }
 
         totalItems = await postService.GetTotalPostCountAsync();
+
+        // Notify Blazor to re-render the component
+        StateHasChanged();
     }
 
 

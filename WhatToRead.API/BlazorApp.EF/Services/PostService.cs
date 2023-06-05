@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
 using BlazorApp.EF.Models;
 using EFTopics.BBL.Dtos;
-using EFWhatToRead_BBL.Dtos;
 using EFWhatToRead_DAL.Params;
 using Newtonsoft.Json;
 using System.Text;
-using WhatToRead.API.AdoNet.BBL.Dtos;
 
 namespace BlazorApp.EF.Services
 {
