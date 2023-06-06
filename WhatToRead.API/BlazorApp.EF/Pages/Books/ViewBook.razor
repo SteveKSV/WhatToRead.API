@@ -4,6 +4,8 @@
 @using BlazorApp.EF.Services;
 @using WhatToRead.API.AdoNet.BBL.Dtos;
 @using System.Linq;
+
+
 <h3>Books</h3>
 
 <!--Search input-->
@@ -16,8 +18,13 @@
 else
 {
     <h4>Total books: @totalItems</h4>
-    <a class="btn btn-dark" href="createBook">Create</a>
 
+    <AuthorizeView Roles="Administrator">
+        <Authorized>
+            <a class="btn btn-dark" href="createBook">Create</a>
+        </Authorized>
+    </AuthorizeView>
+    
     <table class="table">
         <thead>
             <tr>
@@ -25,7 +32,12 @@ else
                 <th>Author's name</th>
                 <th>Number of pages</th>
                 <th>Publication date</th>
-                <th></th>
+                <AuthorizeView Roles="Administrator">
+                    <Authorized>
+                        <th></th>
+                    </Authorized>
+                </AuthorizeView>
+                
             </tr>
         </thead>
         <tbody>
@@ -36,16 +48,20 @@ else
                     <td>@book.Author_Name</td>
                     <td>@book.NumberOfPages</td>
                     <td>@book.Publication_Date.ToShortDateString()</td>
-                    <td>
-                        <form onsubmit="@(() => HandleEdit(book.Id))">
-                            <input type="hidden" value="@book.Id" />
-                            <button type="submit" class="btn btn-secondary">Edit</button>
-                        </form>
-                        <form onsubmit="@(() => HandleDelete(book.Id))">
-                            <input type="hidden" value="@book.Id" />
-                            <button type="submit" class="btn btn-danger">Delete</button>
-                        </form>
-                    </td>
+                    <AuthorizeView Roles="Administrator">
+                        <Authorized>
+                            <td>
+                                <form onsubmit="@(() => HandleEdit(book.Id))">
+                                    <input type="hidden" value="@book.Id" />
+                                    <button type="submit" class="btn btn-secondary">Edit</button>
+                                </form>
+                                <form onsubmit="@(() => HandleDelete(book.Id))">
+                                    <input type="hidden" value="@book.Id" />
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </td>
+                        </Authorized>
+                    </AuthorizeView>
                 </tr>
             }
         </tbody>

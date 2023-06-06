@@ -1,35 +1,40 @@
 ﻿@page "/register"
+@using BlazorApp.EF.Helpers;
 @using BlazorApp.EF.Models;
 @using BlazorApp.EF.Services;
 @inject UserService userService
 @inject NavigationManager navManager
+@inject RegisterValidator registerValidator
 <h3>Register</h3>
 
 <EditForm Model="@registerModel" OnValidSubmit="RegisterUser">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
+    <FluentValidationValidator Validator="registerValidator" />
     <div class="form-group">
         <label for="username">Username:</label>
         <InputText id="username" class="form-control" @bind-Value="registerModel.Username" />
+        <ValidationMessage For="@(() => registerModel.Username)" />
     </div>
     <div class="form-group">
         <label for="username">First name:</label>
         <InputText id="username" class="form-control" @bind-Value="registerModel.FirstName" />
+        <ValidationMessage For="@(() => registerModel.FirstName)" />
     </div>
     <div class="form-group">
         <label for="username">Last name:</label>
         <InputText id="username" class="form-control" @bind-Value="registerModel.LastName" />
+        <ValidationMessage For="@(() => registerModel.LastName)" />
     </div>
 
     <div class="form-group">
         <label for="email">Email:</label>
         <InputText id="email" class="form-control" @bind-Value="registerModel.Email" />
+        <ValidationMessage For="@(() => registerModel.Email)" />
     </div>
 
     <div class="form-group">
         <label for="password">Password:</label>
         <InputText id="password" class="form-control" @bind-Value="registerModel.Password" />
+        <ValidationMessage For="@(() => registerModel.Password)" />
     </div>
 
     <div class="form-group">

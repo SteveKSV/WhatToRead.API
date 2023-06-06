@@ -4,13 +4,12 @@
 @using BlazorApp.EF.Models;
 @inject UserService userService
 @inject NavigationManager navManager
-@inject IJSRuntime jsRuntime
 @inject AuthenticationStateProvider authStateProvider
-
+@inject LoginValidator loginValidator
 <h3>Login</h3>
 
 <EditForm Model="@loginModel" OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator />
+    <FluentValidationValidator Validator="loginValidator" />
     <div class="form-group">
         <label>Email</label>
         <InputText @bind-Value="@loginModel.Email" class="form-control" />

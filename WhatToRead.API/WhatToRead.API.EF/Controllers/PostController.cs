@@ -222,7 +222,7 @@ namespace WhatToRead.API.EF.Controllers
         /// </remarks>
         /// <response code="200">Post is deleted successfully</response>
         /// <response code="400">There is some problem in method</response>
-        [HttpDelete]
+        [HttpDelete("{postId}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
@@ -270,7 +270,7 @@ namespace WhatToRead.API.EF.Controllers
         /// </remarks>
         /// <response code="200">Post is updated successfully</response>
         /// <response code="400">There is some problem in method</response>
-        [HttpPut]
+        [HttpPut("{postId}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
@@ -303,7 +303,7 @@ namespace WhatToRead.API.EF.Controllers
                     ModelState.AddModelError("", "Щось пішло не так під час оновлення post!");
                     return StatusCode(500, ModelState);
                 }
-                return NoContent();
+                return Ok($"Post is updated successfully");
             }
             catch (Exception ex)
             {

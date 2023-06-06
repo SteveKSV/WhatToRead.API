@@ -10,7 +10,8 @@ builder.Services.AddServerSideBlazor();
 
 // Adding validators
 builder.Services.AddSingleton<PostValidator>();
-
+builder.Services.AddSingleton<LoginValidator>();
+builder.Services.AddSingleton<RegisterValidator>();
 // Adding Http Client Service
 builder.Services.AddHttpClientServices(builder);
 builder.Services.AddHttpContextAccessor();
