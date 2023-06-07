@@ -7,7 +7,7 @@ namespace Application.Features.Orders.Commands.UpdateOrder
 {
     public class UpdateOrderCommand : IRequest<bool>
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public DateTime NewOrderDate { get; set; }
         public OrderStatus NewStatus { get; set; }
         public decimal NewTotalAmount { get; set; }
@@ -15,16 +15,16 @@ namespace Application.Features.Orders.Commands.UpdateOrder
 
     internal class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommand, bool>
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IGenericRepository<Order> _repository;
 
-        public UpdateOrderCommandHandler(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
+        public UpdateOrderCommandHandler(IGenericRepository<Order> repository)
+        {   
+            _repository = repository;
         }
 
         public async Task<bool> Handle(UpdateOrderCommand request, CancellationToken cancellationToken)
         {
-            var order = await _unitOfWork.Repository<Order>().GetByIdAsync(request.Id);
+            var order = await _repository.GetByIdAsync(request.Id);
 
             if (order != null)
             {
@@ -33,8 +33,10 @@ namespace Application.Features.Orders.Commands.UpdateOrder
                 order.Status = request.NewStatus;
                 order.TotalAmount = request.NewTotalAmount;
 
-                await _unitOfWork.Repository<Order>().UpdateAsync(order);
-                await _unitOfWork.Save(cancellationToken);
+                await _repository.UpdateAsync(order);
+
+                // No need to call Save for MongoDB
+                // Changes are automatically persisted
 
                 return true; // Return true to indicate successful update
             }

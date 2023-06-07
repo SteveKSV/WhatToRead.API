@@ -4,9 +4,9 @@ namespace Domain.Entities
 {
     public class ShippingAddress : BaseEntity
     {
-        public ShippingAddress(int id, string firstName, string lastName, string addressLine1, string addressLine2, string city, string state, string country)
+        public ShippingAddress(string id, string firstName, string lastName, string addressLine1, string addressLine2, string city, string state, string country)
         {
-            Id = id;
+            _id = id;
             FirstName = firstName;
             LastName = lastName;
             AddressLine1 = addressLine1;

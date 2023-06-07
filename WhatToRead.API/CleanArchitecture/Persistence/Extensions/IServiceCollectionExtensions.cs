@@ -1,8 +1,8 @@
 ﻿using Application.Interfaces.Repositories;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Persistence.Contexts;
+using Microsoft.Extensions.Options;
+using MongoDB.Driver;
 using Persistence.Repositories;
 
 namespace Persistence.Extensions
@@ -11,23 +11,30 @@ namespace Persistence.Extensions
     {
         public static void AddPersistenceLayer(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext(configuration);
             services.AddRepositories();
-        }
-
-        private static void AddDbContext(this IServiceCollection services, IConfiguration configuration)
-        {
-            var connectionString = configuration.GetConnectionString("MSSQL");
-
-            services.AddDbContext<ApplicationDbContext>(options =>
-               options.UseSqlServer(connectionString));
+            services.AddMongoDB(configuration);
         }
 
         private static void AddRepositories(this IServiceCollection services)
         {
             services
-                .AddTransient(typeof(IUnitOfWork), typeof(UnitOfWork))
-                .AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+                .AddTransient(typeof(IGenericRepository<>), typeof(GenericRepositoryMongo<>));
+        }
+
+        private static void AddMongoDB(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<MongoDbSettings>(configuration.GetSection("MongoDbSettings"));
+            services.AddSingleton<IMongoClient>(sp =>
+            {
+                var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
+                return new MongoClient(settings.ConnectionString);
+            });
+            services.AddScoped<IMongoDatabase>(sp =>
+            {
+                var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
+                var client = sp.GetRequiredService<IMongoClient>();
+                return client.GetDatabase(settings.DatabaseName);
+            });
         }
     }
 }

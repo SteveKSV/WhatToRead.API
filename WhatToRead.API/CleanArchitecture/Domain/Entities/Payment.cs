@@ -8,9 +8,9 @@ namespace Domain.Entities
         public DateTime PaymentDate { get; private set; }
         public string Status { get; private set; }
 
-        public Payment(int id, decimal amount, string paymentMethod)
+        public Payment(string id, decimal amount, string paymentMethod)
         {
-            Id = id;
+            _id = id;
             Amount = amount;
             PaymentMethod = paymentMethod;
             PaymentDate = DateTime.UtcNow;

@@ -9,25 +9,23 @@ namespace Application.Features.Orders.Queries.GetByIdOrder
 {
     public class GetByIdOrderQuery : IRequest<GetByIdOrderDto>
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
     }
 
     internal class GetByIdOrderQueryHandler : IRequestHandler<GetByIdOrderQuery, GetByIdOrderDto>
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IGenericRepository<Order> _repository;
         private readonly IMapper _mapper;
-        public GetByIdOrderQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
+
+        public GetByIdOrderQueryHandler(IGenericRepository<Order> repository, IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
+            _repository = repository;
             _mapper = mapper;
         }
 
         public async Task<GetByIdOrderDto> Handle(GetByIdOrderQuery request, CancellationToken cancellationToken)
         {
-            var order = await _unitOfWork.Repository<Order>()
-                 .Entities
-                 .Include(o => o.OrderItems)
-                 .FirstOrDefaultAsync(o => o.Id == request.Id);
+            var order = await _repository.GetByIdAsync(request.Id);
 
             var dto = _mapper.Map<GetByIdOrderDto>(order);
             return dto;

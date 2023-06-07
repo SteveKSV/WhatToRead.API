@@ -11,21 +11,18 @@ namespace Application.Features.Orders.Queries.GetAllOrders
     }
     internal class GetAllOrdersQueryHandler : IRequestHandler<GetAllOrdersQuery, List<GetAllOrdersDto>>
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IGenericRepository<Order> _repository;
         private readonly IMapper _mapper;
 
-        public GetAllOrdersQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
+        public GetAllOrdersQueryHandler(IGenericRepository<Order> repository, IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
+            _repository = repository;
             _mapper = mapper;
         }
 
         public async Task<List<GetAllOrdersDto>> Handle(GetAllOrdersQuery request, CancellationToken cancellationToken)
         {
-            var orders = await _unitOfWork.Repository<Order>()
-                .Entities
-                .Include(o => o.OrderItems)
-                .ToListAsync();
+            var orders = await _repository.GetAllAsync();
 
             var dtos = _mapper.Map<List<GetAllOrdersDto>>(orders);
             return dtos;

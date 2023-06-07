@@ -25,7 +25,7 @@ namespace Presentation.Controllers
             return Ok(await _mediator.Send(new GetAllOrdersQuery()));
         }
         [HttpGet("GetOrderById/{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(string id)
         {
             var query = new GetByIdOrderQuery { Id = id };
             var order = await _mediator.Send(query);
@@ -52,7 +52,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPut("UpdateOrder/{id}")]
-        public async Task<IActionResult> UpdateOrder(int id, [FromBody] UpdateOrderCommand command)
+        public async Task<IActionResult> UpdateOrder(string id, [FromBody] UpdateOrderCommand command)
         {
             command.Id = id;
             bool success = await _mediator.Send(command);
@@ -66,7 +66,7 @@ namespace Presentation.Controllers
         }
 
         [HttpDelete("DeleteOrder/{id}")]
-        public async Task<IActionResult> DeleteOrder(int id)
+        public async Task<IActionResult> DeleteOrder(string id)
         {
             var command = new DeleteOrderCommand { Id = id };
             var result = await _mediator.Send(command);

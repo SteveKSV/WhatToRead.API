@@ -16,11 +16,11 @@ namespace Application.Features.Orders.Commands.CreateOrder
 
     internal class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Order>
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IGenericRepository<Order> _repository;
 
-        public CreateOrderCommandHandler(IUnitOfWork unitOfWork)
+        public CreateOrderCommandHandler(IGenericRepository<Order> repository)
         {
-            _unitOfWork = unitOfWork;
+            _repository = repository;
         }
 
         public async Task<Order> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
@@ -41,9 +41,7 @@ namespace Application.Features.Orders.Commands.CreateOrder
                 OrderItems = orderItems
             };
 
-            await _unitOfWork.Repository<Order>().AddAsync(order);
-            await _unitOfWork.Save(cancellationToken);
-
+            await _repository.AddAsync(order);
             return order;
         }
     }
