@@ -1,9 +1,9 @@
 ﻿using Application.Features.Orders.Commands.CreateOrder;
 using Domain.Enums;
 
-namespace Application.Features.Orders.Queries.GetAllOrders
+namespace Application.Features.Orders.Queries.GetByIdOrder
 {
-    public class GetAllOrdersDto
+    public class GetByIdOrderDto
     {
         public int Id { get; set; }
         public DateTime OrderDate { get; set; }

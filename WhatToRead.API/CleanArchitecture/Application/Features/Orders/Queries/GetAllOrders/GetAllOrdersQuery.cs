@@ -2,13 +2,13 @@
 using AutoMapper;
 using Domain.Entities;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Orders.Queries.GetAllOrders
 {
     public record class GetAllOrdersQuery : IRequest<List<GetAllOrdersDto>>
     {
     }
-
     internal class GetAllOrdersQueryHandler : IRequestHandler<GetAllOrdersQuery, List<GetAllOrdersDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -22,7 +22,11 @@ namespace Application.Features.Orders.Queries.GetAllOrders
 
         public async Task<List<GetAllOrdersDto>> Handle(GetAllOrdersQuery request, CancellationToken cancellationToken)
         {
-            var orders = await _unitOfWork.Repository<Order>().GetAllAsync();
+            var orders = await _unitOfWork.Repository<Order>()
+                .Entities
+                .Include(o => o.OrderItems)
+                .ToListAsync();
+
             var dtos = _mapper.Map<List<GetAllOrdersDto>>(orders);
             return dtos;
         }
